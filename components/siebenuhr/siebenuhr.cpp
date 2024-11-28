@@ -5,7 +5,7 @@ namespace siebenuhr {
 
 static const char *const TAG = "siebenuhr";
 
-void set_mode(int mode)
+void Siebenuhr::set_mode(int mode)
 {
     m_mode = mode;
     ESP_LOGD(TAG, "SiebenUhr Mode: %s", m_mode == 1 ? "MINI" : "REGULAR");
