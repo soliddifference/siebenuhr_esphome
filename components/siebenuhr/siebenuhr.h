@@ -8,7 +8,7 @@
 namespace esphome {
 namespace siebenuhr {
 
-class SiebenuhrDisplay : public PollingComponent {
+class SiebenuhrDisplay : public Component {
  public:
   void setup() override;
   void loop() override;
