@@ -26,7 +26,7 @@ void SiebenuhrDisplay::loop()
     if (now - last_toggle > 1000) {  // Toggle every second
         m_state = !m_state;
         digitalWrite(m_pin, m_state);
-        ESP_LOGD(TAG, "Toggling LED: %s", m_state ? "ON" : "OFF");
+        ESP_LOGD(TAG, "Toggling LED: %s (%s)", m_state ? "ON" : "OFF", m_mode == 1 ? "MINI" : "REGULAR");
         last_toggle = now;
     }
 }
