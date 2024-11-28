@@ -9,7 +9,7 @@ CODEOWNERS = ["@yannicksuter"]
 
 siebenuhr_ns = cg.esphome_ns.namespace("siebenuhr")
 SiebenuhrDisplay = siebenuhr_ns.class_(
-    "SiebenuhrDisplay", display.DisplayBuffer, cg.PollingComponent
+    "SiebenuhrDisplay", cg.PollingComponent
 )
 
 CONFIG_SCHEMA = cv.Schema(
@@ -21,6 +21,6 @@ CONFIG_SCHEMA = cv.Schema(
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
+    await display.register_display(var, config)
 
     cg.add(var.set_mode(config[CONF_MODE]))

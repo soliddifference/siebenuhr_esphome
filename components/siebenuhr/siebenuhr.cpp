@@ -5,19 +5,19 @@ namespace siebenuhr {
 
 static const char *const TAG = "siebenuhr";
 
-void Siebenuhr::set_mode(int mode)
+void SiebenuhrDisplay::set_mode(int mode)
 {
     m_mode = mode;
     ESP_LOGD(TAG, "SiebenUhr Mode: %s", m_mode == 1 ? "MINI" : "REGULAR");
 }
 
-void Siebenuhr::setup() 
+void SiebenuhrDisplay::setup() 
 {
     ESP_LOGCONFIG(TAG, "Setting up Siebenuhr Component...");
     pinMode(m_pin, OUTPUT);
 }
 
-void Siebenuhr::loop() 
+void SiebenuhrDisplay::loop() 
 {
     static unsigned long last_toggle = 0;
     unsigned long now = millis();
