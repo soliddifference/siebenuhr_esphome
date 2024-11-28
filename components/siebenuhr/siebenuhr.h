@@ -5,14 +5,12 @@
 #include "esphome/core/color.h"
 #include "esphome/core/log.h"
 
-#include "esphome/components/display/display.h"
-
 #include <vector>
 
 namespace esphome {
 namespace siebenuhr {
 
-class SiebenuhrDisplay : public display::Display {
+class SiebenuhrDisplay : public Component {
  public:
   void setup() override;
   void loop() override;
