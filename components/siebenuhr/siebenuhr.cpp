@@ -1,5 +1,7 @@
 #include "siebenuhr.h"
 
+#include <Arduino.h>
+
 namespace esphome {
 namespace siebenuhr {
 
