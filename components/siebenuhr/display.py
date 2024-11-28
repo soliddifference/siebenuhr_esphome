@@ -1,5 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
+from esphome.components import display, light
 
 CONF_MODE = "mode"
 from esphome.const import (CONF_ID, CONF_MODE)
@@ -8,7 +9,7 @@ CODEOWNERS = ["@yannicksuter"]
 
 siebenuhr_ns = cg.esphome_ns.namespace("siebenuhr")
 SiebenuhrDisplay = siebenuhr_ns.class_(
-    "SiebenuhrDisplay"
+    "SiebenuhrDisplay", display.DisplayBuffer, cg.PollingComponent
 )
 
 CONFIG_SCHEMA = cv.Schema(

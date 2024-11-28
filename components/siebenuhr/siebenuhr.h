@@ -1,12 +1,16 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/core/color.h"
+#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/light/addressable_light.h"
+
 #include "esphome/core/log.h"
 
 namespace esphome {
 namespace siebenuhr {
 
-class SiebenuhrDisplay : public Component {
+class SiebenuhrDisplay : public display::DisplayBuffer {
  public:
   void setup() override;
   void loop() override;
