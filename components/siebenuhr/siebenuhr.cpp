@@ -2,8 +2,7 @@
 
 #include <Arduino.h>
 
-namespace esphome {
-namespace siebenuhr {
+namespace esphome::siebenuhr {
 
 static const char *const TAG = "siebenuhr";
 
@@ -31,5 +30,4 @@ void SiebenuhrDisplay::loop()
     }
 }
 
-}  // namespace siebenuhr
-}  // namespace esphome
+}

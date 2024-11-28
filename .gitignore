@@ -1,7 +1,6 @@
-siebenuhr_config.yaml
+local.yaml
 
 # Ignore build artifacts
-siebenuhr_example.yaml
 .esphome
 *.pyc
 __pycache__/

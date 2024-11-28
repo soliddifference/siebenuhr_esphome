@@ -5,21 +5,20 @@
 
 #include "esphome/core/log.h"
 
-namespace esphome {
-namespace siebenuhr {
+namespace esphome::siebenuhr {
 
-class SiebenuhrDisplay : public Component {
- public:
-  void setup() override;
-  void loop() override;
+class SiebenuhrDisplay : public Component 
+{
+public:
+    void setup() override;
+    void loop() override;
 
-  void set_mode(int mode);
+    void set_mode(int mode);
 
 protected:
-  int m_mode {0};
-  int m_pin {2};
-  bool m_state {false};
+    int m_mode {0};
+    int m_pin {2};
+    bool m_state {false};
 };
 
-}  // namespace addressable_light
-}  // namespace esphome
+}

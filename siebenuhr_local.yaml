@@ -1,0 +1,32 @@
+esphome:
+  name: "siebenuhr-mini"
+  friendly_name: SiebenUhr::Mini
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+external_components:
+  - source:
+      type: local
+      path: ./components
+    components: [ siebenuhr ]
+    refresh: 0s
+
+logger:
+
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+captive_portal:
+    
+display:
+  - platform: siebenuhr
+    mode: 0
