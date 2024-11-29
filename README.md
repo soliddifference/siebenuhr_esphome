@@ -19,8 +19,8 @@ Before proceeding, ensure you have the following installed:
 1. Ensure you have [ESPHome](https://esphome.io/) installed and set up on your system.
 2. Clone the repository to your local machine:
    ```bash
-   git clone https://github.com/your-repo-name.git
-   cd your-repo-name
+   git https://github.com/soliddifference/siebenuhr_esphome
+   cd siebenuhr_esphome
    ```
 
 ### Configuration
