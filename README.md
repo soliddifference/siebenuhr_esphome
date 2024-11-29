@@ -9,37 +9,46 @@ Before proceeding, ensure you have the following installed:
 
 1. [ESPHome](https://esphome.io/guides/installing.html) installed locally or in a Home Assistant environment.
 2. An ESP32 board and the necessary USB connection for flashing.
-3. A configured development environment (Python, ESPHome CLI, etc.).
+3. A configured development environment (Python, ESPHome CLI, VisualCode, etc.).
 
 ---
 
 ## Getting Started
 
-Follow these steps to build and run the Siebenuhr ESPHome firmware.
-
-### 1. Clone the Repository
-Checkout the code from the repository:
-```bash
-git clone https://github.com/soliddifference/siebenuhr_esphome.git
-cd siebenuhr_esphome
-```
-
-### 2. Update Configuration
-1. Make a copy of the placeholder file:
+### Prerequisites
+1. Ensure you have [ESPHome](https://esphome.io/) installed and set up on your system.
+2. Clone the repository to your local machine:
    ```bash
-   cp __init__RENAME.py __init__.py
-   ```
-2. Edit the Wi-Fi configuration in `__init__.py` to match your network credentials:
-   ```yaml
-   wifi:
-     ssid: "YourSSID"
-     password: "YourPassword"
+   git clone https://github.com/your-repo-name.git
+   cd your-repo-name
    ```
 
-### 3. Build and Upload the Firmware
-Run the following command to build and upload the firmware to your ESP32:
-```bash
-esphome run siebenuhr_config.yaml
-```
+### Configuration
+1. Make a copy of either `siebenuhr_git.yaml` or `siebenuhr_local.yaml`:
+   - Use `siebenuhr_local.yaml` for development purposes as it refers to the local version of the code and is optimized for fast compile and testing iterations.
+   ```bash
+   cp siebenuhr_local.yaml your_modified_config.yaml
+   ```
 
-This will compile the configuration, flash the ESP32 board, and start the ESPHome firmware.
+2. Edit `your_modified_config.yaml` to configure it for your local environment:
+   - Update the most critical settings, specifically WiFi credentials, in the `wifi` section:
+     ```yaml
+     wifi:
+       ssid: !secret wifi_ssid
+       password: !secret wifi_password
+     ```
+
+### Compiling and Testing
+1. Test if your setup compiles by running:
+   ```bash
+   esphome compile your_modified_config.yaml
+   ```
+
+2. Alternatively, you can compile, upload, and connect to your device in one step:
+   ```bash
+   esphome run your_modified_config.yaml
+   ```
+
+---
+
+**Happy coding!**
