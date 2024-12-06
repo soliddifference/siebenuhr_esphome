@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "siebenuhr.h"
-#include "siebenuhr_core.h"
+
+#include "siebenuhr_controller.h"
 
 namespace esphome::siebenuhr {
 
@@ -17,7 +18,7 @@ void SiebenuhrDisplay::setup()
     ESP_LOGCONFIG(TAG, "Setting up Siebenuhr Component...");
     pinMode(m_pin, OUTPUT);
 
-    S7Controller *pController = S7Controller::getInstance();
+    siebenuhr_core::Controller *pController = siebenuhr_core::Controller::getInstance();
     if (pController != nullptr) 
     {
         pController->initialize();
@@ -26,7 +27,7 @@ void SiebenuhrDisplay::setup()
 
 void SiebenuhrDisplay::loop() 
 {
-    S7Controller *pController = S7Controller::getInstance();
+    siebenuhr_core::Controller *pController = siebenuhr_core::Controller::getInstance();
     if (pController != nullptr) 
     {
         pController->update();
