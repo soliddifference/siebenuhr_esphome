@@ -2,6 +2,9 @@ esphome:
   name: "siebenuhr-mini"
   friendly_name: SiebenUhr::Mini
 
+  libraries:
+    - https://github.com/soliddifference/siebenuhr_core.git
+
 esp32:
   board: esp32dev
   framework:
