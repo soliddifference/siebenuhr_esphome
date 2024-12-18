@@ -38,6 +38,16 @@ Before proceeding, ensure you have the following installed:
        password: !secret wifi_password
      ```
 
+3. **Switching to a Local Repository for Development:**
+   - To work with a local version of the library during development, reference the library using a `file://` path instead of a GitHub URL. This allows for faster compile and testing without requiring Git commits.
+
+     ```yaml
+     libraries:
+       - file://C:\local\path\to\the\core_package\dir\siebenuhr_core
+     ```
+
+   - Replace the path above with the location of your locally checked-out repository.
+
 ### Compiling and Testing
 1. Test if your setup compiles by running:
    ```bash
