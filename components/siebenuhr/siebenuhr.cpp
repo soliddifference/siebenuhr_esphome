@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include "siebenuhr.h"
 
-#include "siebenuhr_controller.h"
+// #include "siebenuhr_controller.h"
+#include <siebenuhr_controller.h>
 
 namespace esphome::siebenuhr {
 
@@ -20,7 +21,7 @@ void SiebenuhrDisplay::setup()
     siebenuhr_core::Controller *pController = siebenuhr_core::Controller::getInstance();
     if (pController != nullptr) 
     {
-        pController->initialize();
+        pController->initialize(m_mode);
         pController->setInterval(1000);
         pController->setLEDPin(2);
     }
