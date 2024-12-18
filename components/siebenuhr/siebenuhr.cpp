@@ -22,6 +22,7 @@ void SiebenuhrDisplay::setup()
     {
         pController->initialize();
         pController->setInterval(1000);
+        pController->setLEDPin(2);
     }
 }
 
