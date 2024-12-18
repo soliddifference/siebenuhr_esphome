@@ -16,12 +16,12 @@ void SiebenuhrDisplay::set_mode(int mode)
 void SiebenuhrDisplay::setup() 
 {
     ESP_LOGCONFIG(TAG, "Setting up Siebenuhr Component...");
-    pinMode(m_pin, OUTPUT);
 
     siebenuhr_core::Controller *pController = siebenuhr_core::Controller::getInstance();
     if (pController != nullptr) 
     {
         pController->initialize();
+        pController->setInterval(1000);
     }
 }
 
@@ -31,15 +31,6 @@ void SiebenuhrDisplay::loop()
     if (pController != nullptr) 
     {
         pController->update();
-    }
-
-    static unsigned long last_toggle = 0;
-    unsigned long now = millis();
-    if (now - last_toggle > 1000) {  // Toggle every second
-        m_state = !m_state;
-        digitalWrite(m_pin, m_state);
-        ESP_LOGD(TAG, "Toggling LED: %s (%s)", m_state ? "ON" : "OFF", m_mode == 1 ? "MINI" : "REGULAR");
-        last_toggle = now;
     }
 }
 

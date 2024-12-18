@@ -17,8 +17,8 @@ public:
 
 protected:
     int m_mode {0};
-    int m_pin {2};
-    bool m_state {false};
+    // int m_pin {2};
+    // bool m_state {false};
 };
 
 }
