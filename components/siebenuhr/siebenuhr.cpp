@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "siebenuhr.h"
 
-// #include "siebenuhr_controller.h"
 #include <siebenuhr_controller.h>
 
 namespace esphome::siebenuhr {
@@ -11,7 +10,7 @@ static const char *const TAG = "siebenuhr";
 void SiebenuhrDisplay::set_mode(int mode)
 {
     m_mode = mode;
-    ESP_LOGD(TAG, "SiebenUhr Mode: %s", m_mode == 1 ? "MINI" : "REGULAR");
+    ESP_LOGCONFIG(TAG, "SiebenUhr Mode: %s", m_mode == 1 ? "MINI" : "REGULAR");
 }
 
 void SiebenuhrDisplay::setup() 
@@ -21,9 +20,8 @@ void SiebenuhrDisplay::setup()
     siebenuhr_core::Controller *pController = siebenuhr_core::Controller::getInstance();
     if (pController != nullptr) 
     {
-        pController->initialize(m_mode);
-        pController->setInterval(1000);
-        pController->setLEDPin(2);
+        pController->initialize(siebenuhr_core::Controller::ClockType::Mini);
+        pController->setHeartbeatEnabled(true);
     }
 }
 
