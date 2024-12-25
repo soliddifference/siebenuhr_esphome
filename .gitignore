@@ -2,5 +2,6 @@ local.yaml
 
 # Ignore build artifacts
 .esphome
+.vscode
 *.pyc
 __pycache__/

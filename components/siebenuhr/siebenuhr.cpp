@@ -20,7 +20,7 @@ void SiebenuhrDisplay::setup()
     siebenuhr_core::Controller *pController = siebenuhr_core::Controller::getInstance();
     if (pController != nullptr) 
     {
-        pController->initialize(siebenuhr_core::Controller::ClockType::Mini);
+        pController->initialize(siebenuhr_core::Controller::ClockType::Regular, 1);
         pController->setHeartbeatEnabled(true);
     }
 }
