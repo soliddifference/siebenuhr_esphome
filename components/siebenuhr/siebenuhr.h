@@ -1,24 +1,27 @@
 #pragma once
 
+#include <Arduino.h>
+
 #include "esphome/core/component.h"
 #include "esphome/core/color.h"
 
 #include "esphome/core/log.h"
 
-namespace esphome::siebenuhr {
+#include "controller.h"
 
-class SiebenuhrDisplay : public Component 
+namespace esphome::siebenuhr 
 {
-public:
-    void setup() override;
-    void loop() override;
+    class SiebenuhrDisplay : public Component 
+    {
+    public:
+        void setup() override;
+        void loop() override;
 
-    void set_mode(int mode);
+        void set_mode(int mode);
 
-protected:
-    int m_mode {0};
-    // int m_pin {2};
-    // bool m_state {false};
-};
+    protected:
+        int m_mode {0};
 
+        Controller m_controller;
+    };
 }
