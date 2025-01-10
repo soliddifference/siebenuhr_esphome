@@ -1,6 +1,6 @@
 #pragma once
 
-#include <siebenuhr_controller.h>
+#include <siebenuhr_display.h>
 
 namespace esphome::siebenuhr 
 {
@@ -11,6 +11,6 @@ namespace esphome::siebenuhr
             void update();
         
         private:
-            siebenuhr_core::Controller *m_display;
+            siebenuhr_core::Display *m_display;
     };
 }
