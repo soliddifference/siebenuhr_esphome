@@ -2,15 +2,15 @@
 
 #include <siebenuhr_display.h>
 
-namespace esphome::siebenuhr 
+namespace esphome::siebenuhr
 {
-    class Controller 
+    class Controller
     {
-        public:
-            void initialize();
-            void update();
-        
-        private:
-            siebenuhr_core::Display *m_display;
+    public:
+        void initialize();
+        void update();
+
+    private:
+        siebenuhr_core::Display *m_display;
     };
 }
