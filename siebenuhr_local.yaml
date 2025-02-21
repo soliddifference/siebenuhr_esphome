@@ -1,5 +1,5 @@
 esphome:
-  name: "siebenuhr-mini"
+  name: "siebenuhr"
   friendly_name: SiebenUhr::Mini
 
   libraries:
@@ -28,8 +28,12 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
-captive_portal:
-    
-display:
-  - platform: siebenuhr
-    mode: 0
+time:
+  - platform: sntp
+    id: sntp_time
+
+siebenuhr:
+  id: my_clock
+  mode: 1
+  time_id: sntp_time
+  text: "hallo"
