@@ -10,6 +10,9 @@ namespace esphome::siebenuhr
         void initialize();
         void update();
 
+        void setText(const std::string &text);
+        void setTime(int hours, int minutes);
+
     private:
         siebenuhr_core::Display *m_display;
     };
