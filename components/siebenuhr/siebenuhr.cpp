@@ -2,34 +2,36 @@
 
 namespace esphome::siebenuhr
 {
-    static const char *const TAG = "siebenuhr";
+    static const char *const TAG = "🚀 Siebenuhr";
 
-    void SiebenuhrDisplay::setMode(int mode)
+    void SiebenuhrClock::set_mode(int mode)
     {
         m_mode = mode;
-        ESP_LOGCONFIG(TAG, "SiebenUhr Mode: %s", m_mode == 1 ? "MINI" : "REGULAR");
+        ESP_LOGI(TAG, "Mode: %s", m_mode == 1 ? "MINI" : "REGULAR");
     }
 
-    void SiebenuhrDisplay::setTimeComponent(esphome::time::RealTimeClock *timeComponent) 
+    void SiebenuhrClock::set_time_component(esphome::time::RealTimeClock *timeComponent) 
     {
         m_timeComponent = timeComponent;
+        ESP_LOGI(TAG, "setTimeComponent");
     }
 
-    void SiebenuhrDisplay::setText(const std::string &text)
+    void SiebenuhrClock::set_text(const std::string &text)
     {
-        ESP_LOGI("Siebenuhr", "New Text Set: %s", text.c_str());        
-        m_controller.setText(text);
+        ESP_LOGI("🚀 Siebenuhr", "New Text Set: %s", text.c_str());        
+        // m_controller.setText(text);
     }
 
-    void SiebenuhrDisplay::setup()
+    void SiebenuhrClock::setup()
     {
-        ESP_LOGCONFIG(TAG, "Initializing Siebenuhr...");
+        ESP_LOGI(TAG, "Initializing");
         m_controller.initialize();
+
+        this->set_interval(1, [this]() { this->loop(); });
     }
 
-    void SiebenuhrDisplay::loop()
+    void SiebenuhrClock::loop()
     {
-
         if (m_timeComponent && m_timeComponent->now().is_valid()) 
         {
             auto current_time = m_timeComponent->now();

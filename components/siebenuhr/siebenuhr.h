@@ -13,16 +13,15 @@
 
 namespace esphome::siebenuhr 
 {
-    class SiebenuhrDisplay : public Component 
+    class SiebenuhrClock : public Component 
     {
     public:
         void setup() override;
         void loop() override;
 
-        void setMode(int mode);
-        void setTimeComponent(esphome::time::RealTimeClock *timeComponent);
-
-        void setText(const std::string &text);
+        void set_mode(int mode);
+        void set_time_component(esphome::time::RealTimeClock *timeComponent);
+        void set_text(const std::string &text);
 
     protected:
         int m_mode = 0;
