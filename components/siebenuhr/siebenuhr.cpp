@@ -2,7 +2,7 @@
 
 namespace esphome::siebenuhr
 {
-    static const char *const TAG = "🚀 Siebenuhr";
+    const char *const GLOBAL_TAG = "🚀 Siebenuhr";
 
     void SiebenuhrClock::set_mode(int mode)
     {
@@ -10,32 +10,29 @@ namespace esphome::siebenuhr
         {
             m_type = siebenuhr_core::ClockType::CLOCK_TYPE_MINI;
         }
-        ESP_LOGI(TAG, "Mode: %s", m_type == siebenuhr_core::ClockType::CLOCK_TYPE_MINI ? "MINI" : "REGULAR");
+        ESP_LOGI(GLOBAL_TAG, "SET: clocktype=%s", m_type == siebenuhr_core::ClockType::CLOCK_TYPE_MINI ? "MINI" : "REGULAR");
     }
 
     #ifdef WITH_WIFI
     void SiebenuhrClock::set_time_component(esphome::time::RealTimeClock *timeComponent) 
     {
         m_timeComponent = timeComponent;
-        ESP_LOGI(TAG, "setTimeComponent");
+        ESP_LOGI(GLOBAL_TAG, "setTimeComponent");
     }
     #endif
 
     void SiebenuhrClock::set_text(const std::string &text)
     {
-        ESP_LOGI("🚀 Siebenuhr", "New Text Set: %s", text.c_str());        
+        ESP_LOGI(GLOBAL_TAG, "SET: text=%s", text.c_str());        
         // m_controller.setText(text);
     }
 
     void SiebenuhrClock::setup()
     {
-        ESP_LOGI(TAG, "Initializing");
+        ESP_LOGI(GLOBAL_TAG, "Siebenuhr Version: %s Build Date: %s %s", FIRMWARE_VERSION, __DATE__, __TIME__);    
+
         m_controller.initialize(m_type);
-
         this->set_interval(1, [this]() { this->loop(); });
-
-        ESP_LOGI(TAG, "First rendering..");
-        m_controller.update();
     }
 
     void SiebenuhrClock::loop()

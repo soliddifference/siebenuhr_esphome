@@ -5,6 +5,8 @@ esphome:
   libraries:
     - Fastled
     - RunningAverage
+    - Wire
+    - BH1750
     - https://github.com/soliddifference/siebenuhr_core.git
 
 esp32:

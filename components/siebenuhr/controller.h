@@ -4,6 +4,8 @@
 
 namespace esphome::siebenuhr
 {
+    extern const char *const GLOBAL_TAG;
+
     class Controller
     {
     public:
@@ -14,6 +16,8 @@ namespace esphome::siebenuhr
         void setTime(int hours, int minutes);
 
     private:
+        bool m_EnvLightLevelEnabled = false;
+
         siebenuhr_core::Display *m_display;
     };
 }
