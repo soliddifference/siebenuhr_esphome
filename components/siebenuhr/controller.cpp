@@ -2,12 +2,12 @@
 
 namespace esphome::siebenuhr
 {
-    void Controller::initialize()
+    void Controller::initialize(siebenuhr_core::ClockType type)
     {
         m_display = siebenuhr_core::Display::getInstance();
         if (m_display != nullptr)
         {
-            m_display->initialize(siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR, 4);
+            m_display->initialize(type, 4);
             m_display->setHeartbeatEnabled(true);
         }
     }

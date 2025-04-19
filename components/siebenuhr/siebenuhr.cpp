@@ -6,15 +6,20 @@ namespace esphome::siebenuhr
 
     void SiebenuhrClock::set_mode(int mode)
     {
-        m_mode = mode;
-        ESP_LOGI(TAG, "Mode: %s", m_mode == 1 ? "MINI" : "REGULAR");
+        if (mode == 1) 
+        {
+            m_type = siebenuhr_core::ClockType::CLOCK_TYPE_MINI;
+        }
+        ESP_LOGI(TAG, "Mode: %s", m_type == siebenuhr_core::ClockType::CLOCK_TYPE_MINI ? "MINI" : "REGULAR");
     }
 
+    #ifdef WITH_WIFI
     void SiebenuhrClock::set_time_component(esphome::time::RealTimeClock *timeComponent) 
     {
         m_timeComponent = timeComponent;
         ESP_LOGI(TAG, "setTimeComponent");
     }
+    #endif
 
     void SiebenuhrClock::set_text(const std::string &text)
     {
@@ -25,13 +30,17 @@ namespace esphome::siebenuhr
     void SiebenuhrClock::setup()
     {
         ESP_LOGI(TAG, "Initializing");
-        m_controller.initialize();
+        m_controller.initialize(m_type);
 
         this->set_interval(1, [this]() { this->loop(); });
+
+        ESP_LOGI(TAG, "First rendering..");
+        m_controller.update();
     }
 
     void SiebenuhrClock::loop()
     {
+        #ifdef WITH_WIFI
         if (m_timeComponent && m_timeComponent->now().is_valid()) 
         {
             auto current_time = m_timeComponent->now();
@@ -44,6 +53,7 @@ namespace esphome::siebenuhr
                 m_currentMinutes = minutes;
             }
         }
+        #endif
 
         m_controller.update();
     }

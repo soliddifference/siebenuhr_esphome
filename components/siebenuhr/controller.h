@@ -7,7 +7,7 @@ namespace esphome::siebenuhr
     class Controller
     {
     public:
-        void initialize();
+        void initialize(siebenuhr_core::ClockType type);
         void update();
 
         void setText(const std::string &text);

@@ -3,7 +3,10 @@ esphome:
   friendly_name: SiebenUhr::Mini
 
   libraries:
+    - Fastled
+    - RunningAverage
     - https://github.com/soliddifference/siebenuhr_core.git
+    # - file://C:\Users\yanni\projects\siebenuhr_core
 
 esp32:
   board: esp32dev
@@ -34,6 +37,6 @@ time:
 
 siebenuhr:
   id: my_clock
-  mode: 1
+  mode: 1 # 0=BIG 1=MINI
   time_id: sntp_time
   text: "hallo"
