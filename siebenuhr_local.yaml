@@ -1,14 +1,12 @@
 esphome:
-  name: "siebenuhr"
-  friendly_name: SiebenUhr::Mini
-
+  name: siebenuhr
+  friendly_name: Siebenuhr
   libraries:
     - Fastled
     - RunningAverage
     - Wire
     - BH1750
-    - https://github.com/soliddifference/siebenuhr_core.git
-    # - file://C:\Users\yanni\projects\siebenuhr_core
+    - file://<path_to_your_project>\siebenuhr_core
 
 esp32:
   board: esp32dev
@@ -27,18 +25,33 @@ logger:
 api:
 
 ota:
-  - platform: esphome
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  reboot_timeout: 0s  # disables reboot on failed Wi-Fi
+
+captive_portal:
 
 time:
   - platform: sntp
     id: sntp_time
 
-siebenuhr:
-  id: my_clock
-  type: 1 # 0=BIG 1=MINI
-  time_id: sntp_time
-  text: "hallo"
+light:
+  - platform: siebenuhr
+    id: my_siebenuhr
+    name: Siebenuhr::Mini
+    type: 1 # 0=BIG 1=MINI
+
+text:
+  - platform: template
+    mode: text
+    id: siebenuhr_text_input
+    name: "Siebenuhr Text Input"
+    set_action:
+      then:
+        # - logger.log:
+        #     format: "Received: %s"
+        #     args: [x.c_str()]
+        - lambda: |-
+            esphome::siebenuhr::global_siebenuhr_clock->set_text(x);

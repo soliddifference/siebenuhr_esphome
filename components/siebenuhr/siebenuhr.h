@@ -1,33 +1,39 @@
 #pragma once
 
-#define FIRMWARE_VERSION "1.0.1"
+#define SIEBENUHR_ESPHOME_VERSION "1.0.1"
 
-#include <Arduino.h>
-
-#include "esphome/core/component.h"
 #include "esphome/core/log.h"
+#include "esphome/core/component.h"
 
+#include "esphome/components/light/light_output.h"
+
+#define WITH_WIFI
 #ifdef WITH_WIFI
     #include "esphome/components/time/real_time_clock.h"
 #endif
 
+#include <siebenuhr_display.h>
+
 #include "controller.h"
 
-#include <string>
+namespace esphome::siebenuhr {
 
-namespace esphome::siebenuhr 
+class SiebenuhrClock : public light::LightOutput, public Component 
 {
-    class SiebenuhrClock : public Component 
-    {
     public:
         void setup() override;
         void loop() override;
 
-        void set_mode(int mode);
+        light::LightTraits get_traits() override;
+        void write_state(light::LightState *state) override;
+        void dump_config() override;
+
+        void set_type(int type);
+        void set_text(std::string text);
+
         #ifdef WITH_WIFI
         void set_time_component(esphome::time::RealTimeClock *timeComponent);
         #endif
-        void set_text(const std::string &text);
 
     protected:
         siebenuhr_core::ClockType m_type = siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR;
@@ -35,10 +41,13 @@ namespace esphome::siebenuhr
         #ifdef WITH_WIFI
         esphome::time::RealTimeClock *m_timeComponent = nullptr;
         #endif
-
+        
         int m_currentHours = 0;
         int m_currentMinutes = 0;
 
         Controller m_controller;
-    };
+};
+
+extern SiebenuhrClock *global_siebenuhr_clock;
+
 }

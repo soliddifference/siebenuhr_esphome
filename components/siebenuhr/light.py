@@ -1,0 +1,29 @@
+import esphome.codegen as cg
+import esphome.config_validation as cv
+from esphome.components import light, time
+from esphome.const import CONF_OUTPUT_ID
+
+CONF_TYPE = "type"
+CONF_TIME_ID = "time_id"
+
+empty_light_ns = cg.esphome_ns.namespace("siebenuhr")
+EmptyLightOutput = empty_light_ns.class_("SiebenuhrClock", light.LightOutput)
+
+CONFIG_SCHEMA = light.BRIGHTNESS_ONLY_LIGHT_SCHEMA.extend(
+    {
+        cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(EmptyLightOutput),
+        cv.Required(CONF_TYPE): cv.int_range(min=0, max=1),
+        cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
+    }
+)
+
+async def to_code(config):
+    var = cg.new_Pvariable(config[CONF_OUTPUT_ID])
+    await light.register_light(var, config)
+
+    if CONF_TIME_ID in config:
+        time_component = await cg.get_variable(config[CONF_TIME_ID])
+        cg.add(var.set_time_component(time_component))
+
+    cg.add(var.set_type(config[CONF_TYPE]))
+    cg.add(var.setup())

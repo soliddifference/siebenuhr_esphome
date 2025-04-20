@@ -1,11 +1,11 @@
 #pragma once
 
+#include "esphome/core/log.h"
+
 #include <siebenuhr_display.h>
 
 namespace esphome::siebenuhr
 {
-    extern const char *const GLOBAL_TAG;
-
     class Controller
     {
     public:

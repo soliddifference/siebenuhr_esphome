@@ -10,6 +10,8 @@ BH1750 g_lightMeter; // Default address 0x23
 
 namespace esphome::siebenuhr
 {
+    const char *const TAG = "🚀 Siebenuhr";
+
     void Controller::initialize(siebenuhr_core::ClockType type)
     {
         m_display = siebenuhr_core::Display::getInstance();
@@ -21,12 +23,12 @@ namespace esphome::siebenuhr
             Wire.begin(SDA_PIN, SCL_PIN);
             if (g_lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) 
             {
-                ESP_LOGI(GLOBAL_TAG, "BH1750 Initialized");
+                ESP_LOGI(TAG, "BH1750 Initialized");
                 m_EnvLightLevelEnabled = true;
             } 
             else 
             {
-                ESP_LOGE(GLOBAL_TAG, "Error initialising BH1750");
+                ESP_LOGE(TAG, "Error initialising BH1750");
             }
         }
     }
@@ -70,6 +72,6 @@ namespace esphome::siebenuhr
         snprintf(formatted_time, sizeof(formatted_time), "%02d%02d", hours, minutes);
         m_display->setText(std::string(formatted_time));
 
-        ESP_LOGI("Controller", "Time set: %02d:%02d", hours, minutes);
+        ESP_LOGI(TAG, "Time set: %02d:%02d", hours, minutes);
     }    
 }
