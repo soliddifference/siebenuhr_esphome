@@ -24,7 +24,6 @@ namespace esphome::siebenuhr
             if (g_lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) 
             {
                 ESP_LOGI(TAG, "BH1750 Initialized");
-                m_EnvLightLevelEnabled = true;
             } 
             else 
             {
@@ -45,10 +44,10 @@ namespace esphome::siebenuhr
 
     void Controller::update()
     {
-        // if (m_EnvLightLevelEnabled) 
-        // {
-        //     getDisplay()->setEnvLightLevel(g_lightMeter.readLightLevel(), 2, 150);
-        // }
+        if (m_autoBrightnessEnabled) 
+        {
+            getDisplay()->setEnvLightLevel(g_lightMeter.readLightLevel(), 2, 150);
+        }
 
         getDisplay()->update();
     }
@@ -74,6 +73,7 @@ namespace esphome::siebenuhr
     void Controller::setText(const std::string &text)
     {
         getDisplay()->setText(text);
+        ESP_LOGI(TAG, "SET: text=%s", text.c_str());
     }
 
     void Controller::setTime(int hours, int minutes) 
@@ -85,4 +85,10 @@ namespace esphome::siebenuhr
 
         ESP_LOGI(TAG, "Time set: %02d:%02d", hours, minutes);
     }    
+
+    void Controller::setAutoBrightnessEnabled(bool isEnabled)
+    {   
+        m_autoBrightnessEnabled = isEnabled;
+        ESP_LOGI(TAG, "SET: auto_brightness=%s", m_autoBrightnessEnabled ? "TRUE" : "FALSE");
+    }
 }

@@ -5,6 +5,7 @@ from esphome.const import CONF_OUTPUT_ID
 
 CONF_TYPE = "type"
 CONF_TIME_ID = "time_id"
+CONF_AUTO_BRIGHTNESS = "auto_brightness"
 
 empty_light_ns = cg.esphome_ns.namespace("siebenuhr")
 EmptyLightOutput = empty_light_ns.class_("SiebenuhrClock", light.LightOutput)
@@ -14,6 +15,7 @@ CONFIG_SCHEMA = light.BRIGHTNESS_ONLY_LIGHT_SCHEMA.extend(
         cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(EmptyLightOutput),
         cv.Required(CONF_TYPE): cv.one_of("REGULAR", "MINI", upper=True),
         cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
+        cv.Optional(CONF_AUTO_BRIGHTNESS, default=False): cv.boolean,
     }
 )
 
@@ -24,6 +26,9 @@ async def to_code(config):
     if CONF_TIME_ID in config:
         time_component = await cg.get_variable(config[CONF_TIME_ID])
         cg.add(var.set_time_component(time_component))
+
+    if CONF_AUTO_BRIGHTNESS in config:
+        cg.add(var.set_auto_brightness(config[CONF_AUTO_BRIGHTNESS]))
 
     type_map = {
         "REGULAR": 0,

@@ -18,11 +18,13 @@ namespace esphome::siebenuhr
 
         void setText(const std::string &text);
         void setTime(int hours, int minutes);
+        void setAutoBrightnessEnabled(bool isEnabled);
+
 
         inline siebenuhr_core::Display *getDisplay();
 
     private:
-        bool m_EnvLightLevelEnabled = false;
+        bool m_autoBrightnessEnabled = false;
 
         siebenuhr_core::Display *m_display;
     };

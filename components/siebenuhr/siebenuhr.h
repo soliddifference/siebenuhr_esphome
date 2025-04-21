@@ -29,6 +29,7 @@ class SiebenuhrClock : public light::LightOutput, public Component
         void dump_config() override;
 
         void set_type(int type);
+        void set_auto_brightness(bool enable);
         void set_text(std::string text);
 
         #ifdef WITH_WIFI

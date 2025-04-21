@@ -77,9 +77,13 @@ namespace esphome::siebenuhr {
         ESP_LOGI(TAG, "SET: clocktype=%s", m_type == siebenuhr_core::ClockType::CLOCK_TYPE_MINI ? "MINI" : "REGULAR");
     }
 
+    void SiebenuhrClock::set_auto_brightness(bool enable)
+    {
+        m_controller.setAutoBrightnessEnabled(enable);
+    }
+
     void SiebenuhrClock::set_text(std::string text) 
     {
-        ESP_LOGI(TAG, "SET: text=%s", text.c_str());
         m_controller.setText(text);
     }
 
