@@ -41,15 +41,26 @@ namespace esphome::siebenuhr {
 
     light::LightTraits SiebenuhrClock::get_traits() 
     {
-        auto traits = light::LightTraits();
-        traits.set_supported_color_modes({light::ColorMode::BRIGHTNESS});
-        traits.set_supported_color_modes({light::ColorMode::RGB});
-        return traits;
+        light::LightTraits traits;
+        traits.set_supported_color_modes({light::ColorMode::RGB, light::ColorMode::BRIGHTNESS});
+        return traits;        
     }
 
     void SiebenuhrClock::write_state(light::LightState *state) 
     {
+        // Handle power (on/off)
+        bool is_on =  state->current_values.is_on();
+        m_controller.setPower(is_on);
 
+        // Handle brightness (0.0 - 1.0 float)
+        float brightness = state->current_values.get_brightness();
+        m_controller.setBrightness(static_cast<int>(brightness * 255.0f));
+
+        // Handle color (RGB values between 0.0 and 1.0)
+        float red = state->current_values.get_red();
+        float green = state->current_values.get_green();
+        float blue = state->current_values.get_blue();
+        m_controller.setColor(static_cast<int>(red * 255.0f), static_cast<int>(green * 255.0f), static_cast<int>(blue * 255.0f));
     }
 
     void SiebenuhrClock::dump_config() 

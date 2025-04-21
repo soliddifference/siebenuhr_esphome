@@ -6,7 +6,8 @@ esphome:
     - RunningAverage
     - Wire
     - BH1750
-    - file://<path_to_your_project>\siebenuhr_core
+    - file://<insert_your_path_to_siebenuhr_core_here>
+
 
 esp32:
   board: esp32dev
@@ -23,8 +24,12 @@ external_components:
 logger:
 
 api:
+  encryption:
+    key: "<insert_your_key_here>"
 
 ota:
+  - platform: esphome
+    password: "<insert_your_password_here>"
 
 wifi:
   ssid: !secret wifi_ssid
@@ -40,8 +45,10 @@ time:
 light:
   - platform: siebenuhr
     id: my_siebenuhr
-    name: Siebenuhr::Mini
-    type: 1 # 0=BIG 1=MINI
+    name: Siebenuhr
+    restore_mode: RESTORE_DEFAULT_ON 
+    type: REGULAR
+    time_id: sntp_time
 
 text:
   - platform: template
@@ -50,8 +57,5 @@ text:
     name: "Siebenuhr Text Input"
     set_action:
       then:
-        # - logger.log:
-        #     format: "Received: %s"
-        #     args: [x.c_str()]
         - lambda: |-
             esphome::siebenuhr::global_siebenuhr_clock->set_text(x);

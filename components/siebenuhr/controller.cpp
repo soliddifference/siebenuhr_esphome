@@ -49,6 +49,21 @@ namespace esphome::siebenuhr
         m_display->update();
     }
 
+    void Controller::setPower(bool powerEnabled)
+    {
+        ESP_LOGI(TAG, "Power set to %s", powerEnabled ? "ON" : "OFF");
+    }
+
+    void Controller::setBrightness(int value)
+    {
+        ESP_LOGI(TAG, "Brightness set to %d", value);
+    }
+
+    void Controller::setColor(int r, int g, int b)
+    {
+        ESP_LOGI(TAG, "Color set to RGB(%d, %d, %d)", r, g, b);
+    }
+
     void Controller::setText(const std::string &text)
     {
         if (m_display == nullptr)

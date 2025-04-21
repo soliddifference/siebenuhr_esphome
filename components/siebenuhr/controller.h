@@ -12,6 +12,10 @@ namespace esphome::siebenuhr
         void initialize(siebenuhr_core::ClockType type);
         void update();
 
+        void setPower(bool powerEnabled);
+        void setBrightness(int value);
+        void setColor(int r, int g, int b);
+
         void setText(const std::string &text);
         void setTime(int hours, int minutes);
 

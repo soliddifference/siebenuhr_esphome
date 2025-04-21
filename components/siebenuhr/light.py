@@ -12,7 +12,7 @@ EmptyLightOutput = empty_light_ns.class_("SiebenuhrClock", light.LightOutput)
 CONFIG_SCHEMA = light.BRIGHTNESS_ONLY_LIGHT_SCHEMA.extend(
     {
         cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(EmptyLightOutput),
-        cv.Required(CONF_TYPE): cv.int_range(min=0, max=1),
+        cv.Required(CONF_TYPE): cv.one_of("REGULAR", "MINI", upper=True),
         cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
     }
 )
@@ -25,5 +25,10 @@ async def to_code(config):
         time_component = await cg.get_variable(config[CONF_TIME_ID])
         cg.add(var.set_time_component(time_component))
 
-    cg.add(var.set_type(config[CONF_TYPE]))
+    type_map = {
+        "REGULAR": 0,
+        "MINI": 1,
+    }
+    cg.add(var.set_type(type_map[config[CONF_TYPE]]))
+
     cg.add(var.setup())
