@@ -1,6 +1,6 @@
 #pragma once
 
-#define SIEBENUHR_ESPHOME_VERSION "1.0.1"
+#define SIEBENUHR_ESPHOME_VERSION "1.0.2"
 
 #include "esphome/core/log.h"
 #include "esphome/core/component.h"
@@ -30,6 +30,7 @@ class SiebenuhrClock : public light::LightOutput, public Component
 
         void set_type(int type);
         void set_auto_brightness(bool enable);
+        void set_color_wheel(bool enable);
         void set_text(std::string text);
 
         #ifdef WITH_WIFI

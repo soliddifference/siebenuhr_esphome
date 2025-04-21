@@ -48,6 +48,8 @@ light:
     name: Siebenuhr
     restore_mode: RESTORE_DEFAULT_ON 
     type: REGULAR
+    auto_brightness: True
+    color_wheel: True
     time_id: sntp_time
 
 text:

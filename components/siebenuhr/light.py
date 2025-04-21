@@ -6,6 +6,7 @@ from esphome.const import CONF_OUTPUT_ID
 CONF_TYPE = "type"
 CONF_TIME_ID = "time_id"
 CONF_AUTO_BRIGHTNESS = "auto_brightness"
+CONF_COLOR_WHEEL = "color_wheel"
 
 empty_light_ns = cg.esphome_ns.namespace("siebenuhr")
 EmptyLightOutput = empty_light_ns.class_("SiebenuhrClock", light.LightOutput)
@@ -16,6 +17,7 @@ CONFIG_SCHEMA = light.BRIGHTNESS_ONLY_LIGHT_SCHEMA.extend(
         cv.Required(CONF_TYPE): cv.one_of("REGULAR", "MINI", upper=True),
         cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
         cv.Optional(CONF_AUTO_BRIGHTNESS, default=False): cv.boolean,
+        cv.Optional(CONF_COLOR_WHEEL, default=False): cv.boolean,
     }
 )
 
@@ -29,6 +31,9 @@ async def to_code(config):
 
     if CONF_AUTO_BRIGHTNESS in config:
         cg.add(var.set_auto_brightness(config[CONF_AUTO_BRIGHTNESS]))
+
+    if CONF_COLOR_WHEEL in config:
+        cg.add(var.set_color_wheel(config[CONF_COLOR_WHEEL]))
 
     type_map = {
         "REGULAR": 0,

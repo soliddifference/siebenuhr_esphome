@@ -82,6 +82,11 @@ namespace esphome::siebenuhr {
         m_controller.setAutoBrightnessEnabled(enable);
     }
 
+    void SiebenuhrClock::set_color_wheel(bool enable)
+    {
+        m_controller.setColorWheelEnabled(enable);
+    }
+
     void SiebenuhrClock::set_text(std::string text) 
     {
         m_controller.setText(text);

@@ -49,6 +49,12 @@ namespace esphome::siebenuhr
             getDisplay()->setEnvLightLevel(g_lightMeter.readLightLevel(), 2, 150);
         }
 
+        if (m_colorWheelEnabled)
+        {
+            CRGB color = getColorWheelColor();
+            getDisplay()->setColor(color);
+        }
+
         getDisplay()->update();
     }
 
@@ -66,8 +72,11 @@ namespace esphome::siebenuhr
 
     void Controller::setColor(int r, int g, int b)
     {
-        getDisplay()->setColor(CRGB(r, g, b));
-        ESP_LOGI(TAG, "Color set to RGB(%d, %d, %d)", r, g, b);
+        if (!m_colorWheelEnabled)
+        {
+            getDisplay()->setColor(CRGB(r, g, b));
+            ESP_LOGI(TAG, "Color set to RGB(%d, %d, %d)", r, g, b);
+        }
     }
 
     void Controller::setText(const std::string &text)
@@ -90,5 +99,32 @@ namespace esphome::siebenuhr
     {   
         m_autoBrightnessEnabled = isEnabled;
         ESP_LOGI(TAG, "SET: auto_brightness=%s", m_autoBrightnessEnabled ? "TRUE" : "FALSE");
+    }
+
+    void Controller::setColorWheelEnabled(bool isEnabled)
+    {
+        m_colorWheelEnabled = isEnabled;
+        ESP_LOGI(TAG, "SET: color_wheel=%s", m_colorWheelEnabled ? "TRUE" : "FALSE");
+    }
+
+    
+    CRGB Controller::getColorWheelColor() 
+    {
+        uint8_t hue = 0;
+        if (false)
+        {
+            // fast rotation: Duration of a full cycle in milliseconds
+            const uint32_t cycle_duration_ms = 20000; // 20 seconds
+            uint32_t now = millis();    
+            hue = (now % cycle_duration_ms) * 255 / cycle_duration_ms;
+        }
+        else
+        {
+            // legacy version from siebenuhr v1.0
+            int sec_of_day = hour() * 3600 + minute() * 60;
+            hue = (int)(((float)sec_of_day / (float)86400) * 255) % 255;
+        }
+
+        return CHSV(hue, 255, 255); // Full saturation and brightness
     }
 }
