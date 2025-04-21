@@ -33,59 +33,55 @@ namespace esphome::siebenuhr
         }
     }
 
-    void Controller::update()
+    siebenuhr_core::Display *Controller::getDisplay()
     {
         if (m_display == nullptr)
         {
-            // something went wrong in the setup!?
+            ESP_LOGV(TAG, "Display not set. Initialize not called (yet) or something went wrong in the setup!?");
             m_display = siebenuhr_core::Display::getInstance();
         }
+        return m_display;
+    }
 
-        if (m_EnvLightLevelEnabled) 
-        {
-            m_display->setEnvLightLevel(g_lightMeter.readLightLevel(), 2, 150);
-        }
+    void Controller::update()
+    {
+        // if (m_EnvLightLevelEnabled) 
+        // {
+        //     getDisplay()->setEnvLightLevel(g_lightMeter.readLightLevel(), 2, 150);
+        // }
 
-        m_display->update();
+        getDisplay()->update();
     }
 
     void Controller::setPower(bool powerEnabled)
     {
+        getDisplay()->setPowerEnabled(powerEnabled);
         ESP_LOGI(TAG, "Power set to %s", powerEnabled ? "ON" : "OFF");
     }
 
     void Controller::setBrightness(int value)
     {
+        getDisplay()->setBrightness(value);
         ESP_LOGI(TAG, "Brightness set to %d", value);
     }
 
     void Controller::setColor(int r, int g, int b)
     {
+        getDisplay()->setColor(CRGB(r, g, b));
         ESP_LOGI(TAG, "Color set to RGB(%d, %d, %d)", r, g, b);
     }
 
     void Controller::setText(const std::string &text)
     {
-        if (m_display == nullptr)
-        {
-            // something went wrong in the setup!?
-            m_display = siebenuhr_core::Display::getInstance();
-        }
-
-        m_display->setText(text);
+        getDisplay()->setText(text);
     }
 
     void Controller::setTime(int hours, int minutes) 
     {
-        if (m_display == nullptr)
-        {
-            // something went wrong in the setup!?
-            m_display = siebenuhr_core::Display::getInstance();
-        }
 
         char formatted_time[5];  // Buffer for "HHMM" + null terminator
         snprintf(formatted_time, sizeof(formatted_time), "%02d%02d", hours, minutes);
-        m_display->setText(std::string(formatted_time));
+        getDisplay()->setText(std::string(formatted_time));
 
         ESP_LOGI(TAG, "Time set: %02d:%02d", hours, minutes);
     }    

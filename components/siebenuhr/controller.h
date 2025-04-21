@@ -19,6 +19,8 @@ namespace esphome::siebenuhr
         void setText(const std::string &text);
         void setTime(int hours, int minutes);
 
+        inline siebenuhr_core::Display *getDisplay();
+
     private:
         bool m_EnvLightLevelEnabled = false;
 
