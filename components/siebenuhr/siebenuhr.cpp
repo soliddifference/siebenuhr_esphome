@@ -87,6 +87,11 @@ namespace esphome::siebenuhr {
         m_controller.setColorWheelEnabled(enable);
     }
 
+    void SiebenuhrClock::set_power_monitoring(bool enable)
+    {
+        m_controller.setPowerMonitoringEnabled(enable);
+    }
+
     void SiebenuhrClock::set_text(std::string text) 
     {
         m_controller.setText(text);
