@@ -47,7 +47,7 @@ namespace esphome::siebenuhr
     void Controller::initializeControls()
     {
         m_encoder = new siebenuhr_core::UIKnob(siebenuhr_core::constants::ROT_ENC_A_PIN, siebenuhr_core::constants::ROT_ENC_B_PIN, siebenuhr_core::constants::ROT_ENC_BUTTON_PIN);;
-        m_encoder->setEncoderBoundaries(0, 255, getDisplay()->getBrightness(), true);
+        m_encoder->setEncoderBoundaries(1, 255, 128, false);
     }
 
     siebenuhr_core::Display *Controller::getDisplay()
@@ -65,12 +65,51 @@ namespace esphome::siebenuhr
         if (m_encoder != nullptr) 
         {
             m_encoder->update();
-            ESP_LOGV(TAG, "
+            if (m_encoder->hasPositionChanged()) 
+            {                
+                if (m_autoBrightnessEnabled)
+                {
+                    long brightness = m_encoder->getPosition(); 
+                    // send state change back to home assistant server
+                    if (m_lightState != nullptr)
+                    {
+                        m_lightState->make_call()
+                            .set_color_mode(light::ColorMode::RGB)
+                            .set_brightness((float)brightness / 255.0f)
+                            .perform();
+                        // -> this will send a proper set brightness change back to the clock!
+                    }
+                    else 
+                    {
+                        m_currentBrightness = brightness;
+                    }
+                }
+                else
+                {
+                    long brightness = m_encoder->getPosition(); 
+                    if (brightness != getDisplay()->getBrightness())
+                    {
+                        // send state change back to home assistant server
+                        if (m_lightState != nullptr)
+                        {
+                            m_lightState->make_call()
+                                .set_color_mode(light::ColorMode::RGB)
+                                .set_brightness((float)brightness / 255.0f)
+                                .perform();
+                            // -> this will send a proper set brightness change back to the clock!
+                        }
+                        else 
+                        {
+                            getDisplay()->setBrightness(brightness);
+                        }
+                    }
+                }
+            }
         }
     
         if (m_autoBrightnessEnabled && m_isBH1750Initialized) 
         {
-            getDisplay()->setEnvLightLevel(g_bh1750.readLightLevel(), 2, 150);
+            getDisplay()->setEnvLightLevel(g_bh1750.readLightLevel(), m_currentBrightness, 100);
         }
 
         if (m_colorWheelEnabled && isTimeSet())
@@ -87,19 +126,35 @@ namespace esphome::siebenuhr
         getDisplay()->update();
     }
 
+    void Controller::setLightState(light::LightState *state)
+    {
+        m_lightState = state;
+    }
+
     void Controller::setPower(bool powerEnabled)
     {
         getDisplay()->setPowerEnabled(powerEnabled);
-        ESP_LOGI(TAG, "Power set to %s", powerEnabled ? "ON" : "OFF");
+        ESP_LOGV(TAG, "Power set to %s", powerEnabled ? "ON" : "OFF");
     }
 
     void Controller::setBrightness(int value)
     {
-        m_currentBrightness = value;
-
-        getDisplay()->setBrightness(m_currentBrightness);
-
-        ESP_LOGI(TAG, "Brightness set to %d", value);
+        if (m_autoBrightnessEnabled)
+        {
+            m_currentBrightness = value;
+            m_encoder->setPosition(m_currentBrightness);
+            ESP_LOGI(TAG, "Base-Brightness set to %d", m_currentBrightness);
+        }
+        else
+        {
+            if (value != m_currentBrightness)
+            {
+                getDisplay()->setBrightness(value);
+                m_currentBrightness = getDisplay()->getBrightness();
+                m_encoder->setPosition(m_currentBrightness);
+                ESP_LOGV(TAG, "Brightness set to %d", value);
+            }
+        }
     }
 
     void Controller::setColor(int r, int g, int b)
@@ -107,7 +162,7 @@ namespace esphome::siebenuhr
         if (!m_colorWheelEnabled)
         {
             getDisplay()->setColor(CRGB(r, g, b));
-            ESP_LOGI(TAG, "Color set to RGB(%d, %d, %d)", r, g, b);
+            // ESP_LOGI(TAG, "Color set to RGB(%d, %d, %d)", r, g, b);
         }
     }
 

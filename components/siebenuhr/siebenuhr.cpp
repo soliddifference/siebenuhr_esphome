@@ -48,6 +48,8 @@ namespace esphome::siebenuhr {
 
     void SiebenuhrClock::write_state(light::LightState *state) 
     {
+        m_controller.setLightState(state);
+
         // Handle power (on/off)
         bool is_on =  state->current_values.is_on();
         m_controller.setPower(is_on);
@@ -62,6 +64,13 @@ namespace esphome::siebenuhr {
         float blue = state->current_values.get_blue();
         m_controller.setColor(static_cast<int>(red * 255.0f), static_cast<int>(green * 255.0f), static_cast<int>(blue * 255.0f));
     }
+
+    // void SiebenuhrClock::update_state(light::LightState *state) 
+    // {
+    //     // state->make_call()
+    //     //     .set_brightness(128.0f)
+    //     //     .perform();
+    // }
 
     void SiebenuhrClock::dump_config() 
     { 

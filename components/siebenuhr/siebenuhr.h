@@ -26,6 +26,7 @@ class SiebenuhrClock : public light::LightOutput, public Component
 
         light::LightTraits get_traits() override;
         void write_state(light::LightState *state) override;
+        // void update_state(light::LightState *state);
         void dump_config() override;
 
         void set_type(int type);

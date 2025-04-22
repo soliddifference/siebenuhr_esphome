@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/core/log.h"
+#include "esphome/components/light/light_output.h"
 
 #include <siebenuhr_display.h>
 #include <siebenuhr_encoder.h>
@@ -12,6 +13,8 @@ namespace esphome::siebenuhr
     public:
         void initialize(siebenuhr_core::ClockType type);
         void update();
+
+        void setLightState(light::LightState *state);
 
         void setPower(bool powerEnabled);
         void setBrightness(int value);
@@ -38,7 +41,8 @@ namespace esphome::siebenuhr
 
         int m_hours = -1;
         int m_minutes = -1;
-        int m_currentBrightness = 255;
+        
+        int m_currentBrightness = 0;
 
         inline bool isTimeSet() 
         {
@@ -50,6 +54,8 @@ namespace esphome::siebenuhr
         bool m_isINA219Initialized = false;
         
         siebenuhr_core::UIKnob* m_encoder = nullptr;
-        siebenuhr_core::Display *m_display= nullptr;
+        siebenuhr_core::Display *m_display = nullptr;
+
+        light::LightState *m_lightState = nullptr;;
     };
 }
