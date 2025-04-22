@@ -39,6 +39,15 @@ namespace esphome::siebenuhr
                 ESP_LOGE(TAG, "Error initialising INA219");
             }
         }
+
+        // setup hardware controls
+        initializeControls();
+    }
+
+    void Controller::initializeControls()
+    {
+        m_encoder = new siebenuhr_core::UIKnob(siebenuhr_core::constants::ROT_ENC_A_PIN, siebenuhr_core::constants::ROT_ENC_B_PIN, siebenuhr_core::constants::ROT_ENC_BUTTON_PIN);;
+        m_encoder->setEncoderBoundaries(0, 255, getDisplay()->getBrightness(), true);
     }
 
     siebenuhr_core::Display *Controller::getDisplay()
@@ -53,6 +62,12 @@ namespace esphome::siebenuhr
 
     void Controller::update()
     {
+        if (m_encoder != nullptr) 
+        {
+            m_encoder->update();
+            ESP_LOGV(TAG, "
+        }
+    
         if (m_autoBrightnessEnabled && m_isBH1750Initialized) 
         {
             getDisplay()->setEnvLightLevel(g_bh1750.readLightLevel(), 2, 150);
@@ -80,7 +95,10 @@ namespace esphome::siebenuhr
 
     void Controller::setBrightness(int value)
     {
-        getDisplay()->setBrightness(value);
+        m_currentBrightness = value;
+
+        getDisplay()->setBrightness(m_currentBrightness);
+
         ESP_LOGI(TAG, "Brightness set to %d", value);
     }
 

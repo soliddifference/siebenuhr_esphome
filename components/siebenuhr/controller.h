@@ -3,6 +3,7 @@
 #include "esphome/core/log.h"
 
 #include <siebenuhr_display.h>
+#include <siebenuhr_encoder.h>
 
 namespace esphome::siebenuhr
 {
@@ -26,6 +27,8 @@ namespace esphome::siebenuhr
         inline siebenuhr_core::Display *getDisplay();
 
     private:
+        void initializeControls();
+
         CRGB getColorWheelColor(int hours, int minutes);
         void readAndPrintPowerMonitoring();
 
@@ -35,6 +38,7 @@ namespace esphome::siebenuhr
 
         int m_hours = -1;
         int m_minutes = -1;
+        int m_currentBrightness = 255;
 
         inline bool isTimeSet() 
         {
@@ -45,6 +49,7 @@ namespace esphome::siebenuhr
         bool m_isBH1750Initialized = false;
         bool m_isINA219Initialized = false;
         
-        siebenuhr_core::Display *m_display;
+        siebenuhr_core::UIKnob* m_encoder = nullptr;
+        siebenuhr_core::Display *m_display= nullptr;
     };
 }

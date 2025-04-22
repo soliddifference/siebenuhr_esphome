@@ -6,6 +6,10 @@ esphome:
     - RunningAverage
     - Wire
     - BH1750
+    - SPI
+    - adafruit/Adafruit BusIO
+    - adafruit/Adafruit INA219
+    - igorantolic/Ai Esp32 Rotary Encoder
     - file://<insert_your_path_to_siebenuhr_core_here>
 
 
