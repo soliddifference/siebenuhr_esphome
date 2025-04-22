@@ -22,6 +22,7 @@ external_components:
     refresh: 0s
 
 logger:
+  # level: ERROR
 
 api:
   encryption:
@@ -50,6 +51,7 @@ light:
     type: REGULAR
     auto_brightness: True
     color_wheel: True
+    power_monitoring: True
     time_id: sntp_time
 
 text:
