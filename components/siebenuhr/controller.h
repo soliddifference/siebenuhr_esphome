@@ -24,19 +24,16 @@ namespace esphome::siebenuhr
         void setTime(int hours, int minutes);
 
         void setAutoBrightnessEnabled(bool isEnabled);
-        void setColorWheelEnabled(bool isEnabled);
         void setPowerMonitoringEnabled(bool isEnabled);
+        void setPersonality(siebenuhr_core::PersonalityType personality);
 
         inline siebenuhr_core::Display *getDisplay();
 
     private:
         void initializeControls();
-
-        CRGB getColorWheelColor(int hours, int minutes);
         void readAndPrintPowerMonitoring();
 
         bool m_autoBrightnessEnabled = false;
-        bool m_colorWheelEnabled = false;
         bool m_powerMonitoringEnabled = false;
 
         int m_hours = -1;
@@ -56,6 +53,6 @@ namespace esphome::siebenuhr
         siebenuhr_core::UIKnob* m_encoder = nullptr;
         siebenuhr_core::Display *m_display = nullptr;
 
-        light::LightState *m_lightState = nullptr;;
+        light::LightState *m_lightState = nullptr;
     };
 }

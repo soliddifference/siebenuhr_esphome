@@ -26,14 +26,13 @@ class SiebenuhrClock : public light::LightOutput, public Component
 
         light::LightTraits get_traits() override;
         void write_state(light::LightState *state) override;
-        // void update_state(light::LightState *state);
         void dump_config() override;
 
         void set_type(int type);
         void set_auto_brightness(bool enable);
-        void set_color_wheel(bool enable);
         void set_power_monitoring(bool enable);
         void set_text(std::string text);
+        void set_personality(std::string rendererName);
 
         #ifdef WITH_WIFI
         void set_time_component(esphome::time::RealTimeClock *timeComponent);

@@ -65,13 +65,6 @@ namespace esphome::siebenuhr {
         m_controller.setColor(static_cast<int>(red * 255.0f), static_cast<int>(green * 255.0f), static_cast<int>(blue * 255.0f));
     }
 
-    // void SiebenuhrClock::update_state(light::LightState *state) 
-    // {
-    //     // state->make_call()
-    //     //     .set_brightness(128.0f)
-    //     //     .perform();
-    // }
-
     void SiebenuhrClock::dump_config() 
     { 
         ESP_LOGCONFIG(TAG, "Siebenuhr"); 
@@ -91,11 +84,6 @@ namespace esphome::siebenuhr {
         m_controller.setAutoBrightnessEnabled(enable);
     }
 
-    void SiebenuhrClock::set_color_wheel(bool enable)
-    {
-        m_controller.setColorWheelEnabled(enable);
-    }
-
     void SiebenuhrClock::set_power_monitoring(bool enable)
     {
         m_controller.setPowerMonitoringEnabled(enable);
@@ -104,6 +92,17 @@ namespace esphome::siebenuhr {
     void SiebenuhrClock::set_text(std::string text) 
     {
         m_controller.setText(text);
+    }
+
+    void SiebenuhrClock::set_personality(std::string rendererName)
+    {
+        if (rendererName == "SOLIDCOLOR") {
+            m_controller.setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR);
+        } else if (rendererName == "COLORWHEEL") {
+            m_controller.setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_COLORWHEEL);
+        } else if (rendererName == "RAINBOW") {
+            m_controller.setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_RAINBOW);
+        }
     }
 
     #ifdef WITH_WIFI
