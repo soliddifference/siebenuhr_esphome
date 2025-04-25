@@ -1,6 +1,6 @@
 #pragma once
 
-#define SIEBENUHR_ESPHOME_VERSION "1.0.3"
+#define SIEBENUHR_ESPHOME_VERSION "1.0.10"
 
 #include "esphome/core/log.h"
 #include "esphome/core/component.h"
@@ -40,6 +40,7 @@ class SiebenuhrClock : public light::LightOutput, public Component
 
     protected:
         siebenuhr_core::ClockType m_type = siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR;
+        siebenuhr_core::PersonalityType m_personality = siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR;
 
         #ifdef WITH_WIFI
         esphome::time::RealTimeClock *m_timeComponent = nullptr;

@@ -12,26 +12,31 @@ namespace esphome::siebenuhr {
 
         global_siebenuhr_clock = this;
 
+        ESP_LOGI(TAG, "Setting up Siebenuhr Clock...");       
+        
+        // Initialize the controller with the stored personality
         m_controller.initialize(m_type);
+        m_controller.setPersonality(m_personality);
 
+        // Update the clock every milliseconds
         this->set_interval(1, [this]() { this->loop(); });
     }
 
     void SiebenuhrClock::loop() 
     {
-        // ESP_LOGI(TAG, "loop");
-
         #ifdef WITH_WIFI
-        if (m_timeComponent && m_timeComponent->now().is_valid()) 
+        if (m_timeComponent && m_timeComponent->now().is_valid())
         {
             auto current_time = m_timeComponent->now();
             int hours = current_time.hour;
             int minutes = current_time.minute;
+            
             if (m_currentHours != hours || m_currentMinutes != minutes)
             {
                 m_controller.setTime(hours, minutes);
                 m_currentHours = hours;
                 m_currentMinutes = minutes;
+                ESP_LOGD(TAG, "Time updated: %02d:%02d", hours, minutes);
             }
         }
         #endif
@@ -94,14 +99,26 @@ namespace esphome::siebenuhr {
         m_controller.setText(text);
     }
 
-    void SiebenuhrClock::set_personality(std::string rendererName)
+    void SiebenuhrClock::set_personality(std::string personality)
     {
-        if (rendererName == "SOLIDCOLOR") {
-            m_controller.setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR);
-        } else if (rendererName == "COLORWHEEL") {
-            m_controller.setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_COLORWHEEL);
-        } else if (rendererName == "RAINBOW") {
-            m_controller.setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_RAINBOW);
+        ESP_LOGI(TAG, "SET: Personality: %s", personality.c_str());
+        
+        if (personality == "SOLIDCOLOR")
+        {
+            m_personality = siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR;
+        }
+        else if (personality == "COLORWHEEL")
+        {
+            m_personality = siebenuhr_core::PersonalityType::PERSONALITY_COLORWHEEL;
+        }
+        else if (personality == "RAINBOW")
+        {
+            m_personality = siebenuhr_core::PersonalityType::PERSONALITY_RAINBOW;
+        }
+        else
+        {
+            ESP_LOGW(TAG, "Unknown personality type: %s, defaulting to SOLIDCOLOR", personality.c_str());
+            m_personality = siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR;
         }
     }
 
