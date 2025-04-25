@@ -41,8 +41,28 @@ time:
   - platform: sntp
     id: sntp_time
 
-siebenuhr:
-  id: my_clock
-  type: 1 # 0=BIG 1=MINI
-  time_id: sntp_time
-  text: "hallo"
+light:
+  - platform: siebenuhr
+    id: my_siebenuhr
+    name: Siebenuhr
+    restore_mode: RESTORE_DEFAULT_ON 
+    type: REGULAR
+    personality: RAINBOW
+    # auto_brightness: True
+    power_monitoring: True
+    time_id: sntp_time
+    default_transition_length: 0s
+
+text:
+  - platform: template
+    mode: text
+    id: siebenuhr_text_input
+    name: "Siebenuhr Text Input"
+    set_action:
+      then:
+        # - logger.log:
+        #     format: "Received: %s"
+        #     args: [x.c_str()]
+        - lambda: |-
+            // esphome::siebenuhr::global_siebenuhr_clock->set_color(CRBG(255,0,0));
+            esphome::siebenuhr::global_siebenuhr_clock->set_text(x);
