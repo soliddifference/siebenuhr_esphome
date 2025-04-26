@@ -176,11 +176,7 @@ namespace esphome::siebenuhr
     {
         m_hours = hours;
         m_minutes = minutes;
-
-        char formatted_time[5];  // Buffer for "HHMM" + null terminator
-        snprintf(formatted_time, sizeof(formatted_time), "%02d%02d", hours, minutes);
-        getDisplay()->setText(std::string(formatted_time));
-
+        getDisplay()->setTime(hours, minutes);
         ESP_LOGI(TAG, "Time set: %02d:%02d", hours, minutes);
     }    
 
