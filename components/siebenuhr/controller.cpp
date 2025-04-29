@@ -170,19 +170,24 @@ namespace esphome::siebenuhr
 
     void Controller::handleManualHueChange()
     {
+        int hue = m_encoder->getPosition();
+        CRGB color = CHSV(hue, 255, 255);
+
         if (m_lightState != nullptr)
         {
             // send state change back to home assistant server
             m_lightState->make_call()
                 .set_color_mode(light::ColorMode::RGB)
-                .set_hue((float)m_encoder->getPosition() / 255.0f)
+                .set_red((float)color.red / 255.0f)
+                .set_green((float)color.green / 255.0f)
+                .set_blue((float)color.blue / 255.0f)
                 .perform();
             // -> this will send a proper set hue change back to the clock!
         }
         else
         {
             // implicite conversion to CRGB
-            getDisplay()->setColor(CHSV(m_encoder->getPosition(), 255, 255));
+            getDisplay()->setColor(color);
         }
     }   
 
