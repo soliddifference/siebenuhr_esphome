@@ -31,8 +31,10 @@ namespace esphome::siebenuhr
 
         void setLightState(light::LightState *state);
 
-        void handleMenuChange();
         void setMenu(CONTROLLER_MENU menu);
+        void handleMenuChange();
+        void handleManualBrightnessChange();
+        void handleManualHueChange();
 
         void setPower(bool powerEnabled);
         void setBrightness(int value);
