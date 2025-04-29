@@ -111,6 +111,10 @@ namespace esphome::siebenuhr {
         {
             m_personality = siebenuhr_core::PersonalityType::PERSONALITY_RAINBOW;
         }
+        else if (personality == "MOSAIK")
+        {
+            m_personality = siebenuhr_core::PersonalityType::PERSONALITY_MOSAIK;
+        }
         else
         {
             ESP_LOGW(TAG, "Unknown personality type: %s, defaulting to SOLIDCOLOR", personality.c_str());
