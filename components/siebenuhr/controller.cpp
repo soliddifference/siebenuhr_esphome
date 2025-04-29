@@ -11,6 +11,11 @@ namespace esphome::siebenuhr
 {
     const char *const TAG = "🚀 Siebenuhr";
 
+    const ControllerMenu_t Controller::m_menu[Controller::m_menuMaxEntries] = {
+		{CONTROLLER_MENU::BRIGHTNESS, "Brightness", "Brit"},
+		{CONTROLLER_MENU::HUE, "Hue", "COLr"},
+    };
+
     void Controller::initialize(siebenuhr_core::ClockType type)
     {
         m_display = siebenuhr_core::Display::getInstance();
@@ -40,6 +45,8 @@ namespace esphome::siebenuhr
             }
         }
 
+        m_menuPosLastTimeChange = millis();
+
         // setup hardware controls
         initializeControls();
     }
@@ -60,63 +67,147 @@ namespace esphome::siebenuhr
         return m_display;
     }
 
+    void Controller::setMenu(CONTROLLER_MENU menu) {
+        m_menuCurPos = menu;
+        m_menuPosLastTimeChange = millis();
+       
+        switch (m_menuCurPos) {			
+        case CONTROLLER_MENU::BRIGHTNESS:
+        {
+            int current_brightness = getDisplay()->getBrightness();
+            m_encoder->setEncoderBoundaries(1, 255, current_brightness);
+            ESP_LOGI(TAG, "Switch to Option: %s, value=%d", m_menu[m_menuCurPos].name.c_str(), current_brightness);
+            break;
+        }
+        case CONTROLLER_MENU::HUE: 
+        {
+            getDisplay()->setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR);
+            CRGB current_color = getDisplay()->getColor();
+            CHSV current_color_hsv = rgb2hsv_approximate(current_color);
+            m_encoder->setEncoderBoundaries(0, 255, current_color_hsv.hue, true);
+            ESP_LOGI(TAG, "Switch to Option: %s, hue=%d", m_menu[m_menuCurPos].name.c_str(), current_color_hsv.hue);
+            break;
+        }
+        }
+    }
+
+    void Controller::handleMenuChange() 
+    {
+        // menu timeout, switch back to brightness setting
+        if (m_menuCurPos != CONTROLLER_MENU::BRIGHTNESS && (millis() - m_menuPosLastTimeChange) > 10000) 
+        {
+            setMenu(CONTROLLER_MENU::BRIGHTNESS);
+        }
+
+        // handle menu change
+        if(m_encoder->isButtonReleased()) 
+        {
+            switch (m_menuCurPos) {			
+            case CONTROLLER_MENU::BRIGHTNESS: {
+                    getDisplay()->setNotification(" huE", 1500);
+                    setMenu(CONTROLLER_MENU::HUE);
+                    break;
+                }
+            case CONTROLLER_MENU::HUE: {
+                    getDisplay()->setNotification("brit", 1500);
+                    setMenu(CONTROLLER_MENU::BRIGHTNESS);
+                    break;
+                }
+            }
+        }
+
+        // handle manual value changes of the appropriate menu
+        if (m_encoder->hasPositionChanged()) 
+        {          
+            switch (m_menuCurPos) {
+            case CONTROLLER_MENU::BRIGHTNESS: {
+                handleManualBrightnessChange();
+                break;
+            }
+            case CONTROLLER_MENU::HUE: {
+                handleManualHueChange();
+                break;
+            }
+            }
+        }
+    }   
+
+    void Controller::handleManualBrightnessChange()
+    {
+        if (m_autoBrightnessEnabled)
+        {
+            long brightness = m_encoder->getPosition(); 
+            // send state change back to home assistant server
+            if (m_lightState != nullptr)
+            {
+                m_lightState->make_call()
+                    .set_color_mode(light::ColorMode::RGB)
+                    .set_brightness((float)brightness / 255.0f)
+                    .perform();
+                // -> this will send a proper set brightness change back to the clock!
+            }
+            else 
+            {
+                m_currentBrightness = brightness;
+            }
+        }
+        else
+        {
+            long brightness = m_encoder->getPosition(); 
+            if (brightness != getDisplay()->getBrightness())
+            {
+                // send state change back to home assistant server
+                if (m_lightState != nullptr)
+                {
+                    m_lightState->make_call()
+                        .set_color_mode(light::ColorMode::RGB)
+                        .set_brightness((float)brightness / 255.0f)
+                        .perform();
+                    // -> this will send a proper set brightness change back to the clock!
+                }
+                else 
+                {
+                    getDisplay()->setBrightness(brightness);
+                }
+            }
+        }
+    }
+
+    void Controller::handleManualHueChange()
+    {
+        int hue = m_encoder->getPosition();
+        CRGB color = CHSV(hue, 255, 255);
+
+        if (m_lightState != nullptr)
+        {
+            // send state change back to home assistant server
+            m_lightState->make_call()
+                .set_color_mode(light::ColorMode::RGB)
+                .set_red((float)color.red / 255.0f)
+                .set_green((float)color.green / 255.0f)
+                .set_blue((float)color.blue / 255.0f)
+                .perform();
+            // -> this will send a proper set hue change back to the clock!
+        }
+        else
+        {
+            // implicite conversion to CRGB
+            getDisplay()->setColor(color);
+        }
+    }   
+
     void Controller::update()
     {
         if (m_encoder != nullptr) 
         {
             m_encoder->update();
-            if (m_encoder->hasPositionChanged()) 
-            {                
-                if (m_autoBrightnessEnabled)
-                {
-                    long brightness = m_encoder->getPosition(); 
-                    // send state change back to home assistant server
-                    if (m_lightState != nullptr)
-                    {
-                        m_lightState->make_call()
-                            .set_color_mode(light::ColorMode::RGB)
-                            .set_brightness((float)brightness / 255.0f)
-                            .perform();
-                        // -> this will send a proper set brightness change back to the clock!
-                    }
-                    else 
-                    {
-                        m_currentBrightness = brightness;
-                    }
-                }
-                else
-                {
-                    long brightness = m_encoder->getPosition(); 
-                    if (brightness != getDisplay()->getBrightness())
-                    {
-                        // send state change back to home assistant server
-                        if (m_lightState != nullptr)
-                        {
-                            m_lightState->make_call()
-                                .set_color_mode(light::ColorMode::RGB)
-                                .set_brightness((float)brightness / 255.0f)
-                                .perform();
-                            // -> this will send a proper set brightness change back to the clock!
-                        }
-                        else 
-                        {
-                            getDisplay()->setBrightness(brightness);
-                        }
-                    }
-                }
-            }
+            handleMenuChange();
         }
     
         if (m_autoBrightnessEnabled && m_isBH1750Initialized) 
         {
             getDisplay()->setEnvLightLevel(g_bh1750.readLightLevel(), m_currentBrightness, 100);
         }
-
-        // if (m_colorWheelEnabled && isTimeSet())
-        // {
-        //     CRGB color = getColorWheelColor(m_hours, m_minutes);
-        //     getDisplay()->setColor(color);
-        // }
 
         if (m_powerMonitoringEnabled && m_isINA219Initialized)
         {
@@ -159,11 +250,7 @@ namespace esphome::siebenuhr
 
     void Controller::setColor(int r, int g, int b)
     {
-        // if (!m_colorWheelEnabled)
-        // {
-            getDisplay()->setColor(CRGB(r, g, b));
-            // ESP_LOGI(TAG, "Color set to RGB(%d, %d, %d)", r, g, b);
-        // }
+        getDisplay()->setColor(CRGB(r, g, b));
     }
 
     void Controller::setText(const std::string &text)
@@ -185,32 +272,6 @@ namespace esphome::siebenuhr
         m_autoBrightnessEnabled = isEnabled;
         ESP_LOGI(TAG, "SET: auto_brightness=%s", m_autoBrightnessEnabled ? "TRUE" : "FALSE");
     }
-
-    // void Controller::setColorWheelEnabled(bool isEnabled)
-    // {
-    //     m_colorWheelEnabled = isEnabled;
-    //     ESP_LOGI(TAG, "SET: color_wheel=%s", m_colorWheelEnabled ? "TRUE" : "FALSE");
-    // }
-
-    // CRGB Controller::getColorWheelColor(int hours, int minutes) 
-    // {
-    //     uint8_t hue = 0;
-    //     if (false)
-    //     {
-    //         // fast rotation for testing: Duration of a full cycle in milliseconds
-    //         const uint32_t cycle_duration_ms = 20000; // 20 seconds
-    //         uint32_t now = millis();    
-    //         hue = (now % cycle_duration_ms) * 255 / cycle_duration_ms;
-    //     }
-    //     else
-    //     {
-    //         // legacy version from siebenuhr v1.0
-    //         int sec_of_day = hours * 3600 + minutes * 60;
-    //         hue = (int)(((float)sec_of_day / (float)86400) * 255) % 255;
-    //     }
-
-    //     return CHSV(hue, 255, 255); // Full saturation and brightness
-    // }
 
     void Controller::setPowerMonitoringEnabled(bool isEnabled)
     {
@@ -246,41 +307,6 @@ namespace esphome::siebenuhr
                 power_in_W?(power_mW / 1000.0):power_mW,
                 power_in_W?"W":"mW"
             );
-
-            // // Format Bus Voltage (already in V)
-            // Serial.print("Bus: ");
-            // Serial.print(busvoltage, 2);
-            // Serial.print("V");
-    
-            // // Format Shunt Voltage (always in mV for INA219)
-            // Serial.print(" | Shunt: ");
-            // Serial.print(shuntvoltage, 2);
-            // Serial.print("mV");
-    
-            // // Format Load Voltage (already in V)
-            // Serial.print(" | Load: ");
-            // Serial.print(loadvoltage, 2);
-            // Serial.print("V");
-    
-            // // Format Current with adaptive units (mA or A)
-            // Serial.print(" | Current: ");
-            // if (abs(current_mA) >= 500.0) {
-            //     Serial.print(current_mA / 1000.0, 2); // Convert to A with 2 decimal places
-            //     Serial.print("A");
-            // } else {
-            //     Serial.print(current_mA, 1); // Keep as mA with 1 decimal place
-            //     Serial.print("mA");
-            // }
-    
-            // // Format Power with adaptive units (mW or W)
-            // Serial.print(" | Power: ");
-            // if (abs(power_mW) >= 500.0) {
-            //     Serial.print(power_mW / 1000.0, 2); // Convert to W with 2 decimal places
-            //     Serial.print("W");
-            // } else {
-            //     Serial.print(power_mW, 1); // Keep as mW with 1 decimal place
-            //     Serial.print("mW");
-            // }
             
             // Serial.println();
             m_lastSensorReadTime = millis();
