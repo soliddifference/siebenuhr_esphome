@@ -93,6 +93,12 @@ namespace esphome::siebenuhr
 
     void Controller::handleMenuChange() 
     {
+        // menu timeout, switch back to brightness setting
+        if (m_menuCurPos != CONTROLLER_MENU::BRIGHTNESS && (millis() - m_menuPosLastTimeChange) > 10000) 
+        {
+            setMenu(CONTROLLER_MENU::BRIGHTNESS);
+        }
+
         // handle menu change
         if(m_encoder->isButtonReleased()) 
         {
@@ -124,7 +130,6 @@ namespace esphome::siebenuhr
             }
             }
         }
-
     }   
 
     void Controller::handleManualBrightnessChange()
