@@ -70,30 +70,34 @@ namespace esphome::siebenuhr
     void Controller::setMenu(CONTROLLER_MENU menu) {
         m_menuCurPos = menu;
         m_menuPosLastTimeChange = millis();
-
-        ESP_LOGE(TAG, "Switch MENU: %s (uid: %d)", m_menu[m_menuCurPos].name.c_str(), m_menu[m_menuCurPos].uid);
-        
+       
         switch (m_menuCurPos) {			
         case CONTROLLER_MENU::BRIGHTNESS:
-            m_encoder->setEncoderBoundaries(5, 255, getDisplay()->getBrightness());
+        {
+            int current_brightness = getDisplay()->getBrightness();
+            m_encoder->setEncoderBoundaries(1, 255, current_brightness);
+            ESP_LOGI(TAG, "Switch to Option: %s, value=%d", m_menu[m_menuCurPos].name.c_str(), current_brightness);
             break;
+        }
         case CONTROLLER_MENU::HUE: 
+        {
             getDisplay()->setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR);
             CRGB current_color = getDisplay()->getColor();
             CHSV current_color_hsv = rgb2hsv_approximate(current_color);
             m_encoder->setEncoderBoundaries(0, 255, current_color_hsv.hue, true);
+            ESP_LOGI(TAG, "Switch to Option: %s, hue=%d", m_menu[m_menuCurPos].name.c_str(), current_color_hsv.hue);
             break;
+        }
         }
     }
 
     void Controller::handleMenuChange() 
     {
+        // handle menu change
         if(m_encoder->isButtonReleased()) 
         {
             switch (m_menuCurPos) {			
             case CONTROLLER_MENU::BRIGHTNESS: {
-                    // CRGB current_color = getDisplay()->getColor();                        
-                    // getDisplay()->setColor(current_color, 0);
                     getDisplay()->setNotification(" huE", 1500);
                     setMenu(CONTROLLER_MENU::HUE);
                     break;
@@ -106,11 +110,47 @@ namespace esphome::siebenuhr
             }
         }
 
+        // handle manual value changes of the appropriate menu
         if (m_encoder->hasPositionChanged()) 
-        {                
-            if (m_autoBrightnessEnabled)
+        {          
+            switch (m_menuCurPos) {
+            case CONTROLLER_MENU::BRIGHTNESS: {
+                handleManualBrightnessChange();
+                break;
+            }
+            case CONTROLLER_MENU::HUE: {
+                handleManualHueChange();
+                break;
+            }
+            }
+        }
+
+    }   
+
+    void Controller::handleManualBrightnessChange()
+    {
+        if (m_autoBrightnessEnabled)
+        {
+            long brightness = m_encoder->getPosition(); 
+            // send state change back to home assistant server
+            if (m_lightState != nullptr)
             {
-                long brightness = m_encoder->getPosition(); 
+                m_lightState->make_call()
+                    .set_color_mode(light::ColorMode::RGB)
+                    .set_brightness((float)brightness / 255.0f)
+                    .perform();
+                // -> this will send a proper set brightness change back to the clock!
+            }
+            else 
+            {
+                m_currentBrightness = brightness;
+            }
+        }
+        else
+        {
+            long brightness = m_encoder->getPosition(); 
+            if (brightness != getDisplay()->getBrightness())
+            {
                 // send state change back to home assistant server
                 if (m_lightState != nullptr)
                 {
@@ -122,31 +162,29 @@ namespace esphome::siebenuhr
                 }
                 else 
                 {
-                    m_currentBrightness = brightness;
-                }
-            }
-            else
-            {
-                long brightness = m_encoder->getPosition(); 
-                if (brightness != getDisplay()->getBrightness())
-                {
-                    // send state change back to home assistant server
-                    if (m_lightState != nullptr)
-                    {
-                        m_lightState->make_call()
-                            .set_color_mode(light::ColorMode::RGB)
-                            .set_brightness((float)brightness / 255.0f)
-                            .perform();
-                        // -> this will send a proper set brightness change back to the clock!
-                    }
-                    else 
-                    {
-                        getDisplay()->setBrightness(brightness);
-                    }
+                    getDisplay()->setBrightness(brightness);
                 }
             }
         }
     }
+
+    void Controller::handleManualHueChange()
+    {
+        if (m_lightState != nullptr)
+        {
+            // send state change back to home assistant server
+            m_lightState->make_call()
+                .set_color_mode(light::ColorMode::RGB)
+                .set_hue((float)m_encoder->getPosition() / 255.0f)
+                .perform();
+            // -> this will send a proper set hue change back to the clock!
+        }
+        else
+        {
+            // implicite conversion to CRGB
+            getDisplay()->setColor(CHSV(m_encoder->getPosition(), 255, 255));
+        }
+    }   
 
     void Controller::update()
     {
