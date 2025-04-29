@@ -10,7 +10,7 @@ namespace esphome::siebenuhr
 {
     enum CONTROLLER_MENU {
         BRIGHTNESS = 0,
-        HUE
+        HUE,
         MENU_END
     };
 
@@ -24,7 +24,7 @@ namespace esphome::siebenuhr
     {
     public:
     	static const int m_menuMaxEntries = CONTROLLER_MENU::MENU_END;
-	    static const ControllerMenu_t m_menu[_nMenuMaxEntries];
+	    static const ControllerMenu_t m_menu[m_menuMaxEntries];
 
         void initialize(siebenuhr_core::ClockType type);
         void update();
@@ -69,7 +69,7 @@ namespace esphome::siebenuhr
         bool m_isBH1750Initialized = false;
         bool m_isINA219Initialized = false;
 
-        uint8_t m_menuCurPos = CONTROLLER_MENU::CLOCK;
+        uint8_t m_menuCurPos = CONTROLLER_MENU::BRIGHTNESS;
         uint32_t m_menuPosLastTimeChange;
         
         siebenuhr_core::UIKnob* m_encoder = nullptr;

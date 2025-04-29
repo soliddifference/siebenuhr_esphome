@@ -11,11 +11,10 @@ namespace esphome::siebenuhr
 {
     const char *const TAG = "🚀 Siebenuhr";
 
-    const ControllerMenu_t Controller::g_sMenu[Controller::_nMenuMaxEntries] = {
-		{CONTROLLER_MENU::CLOCK, "Display Clock", "CLCK"},
+    const ControllerMenu_t Controller::m_menu[Controller::m_menuMaxEntries] = {
 		{CONTROLLER_MENU::BRIGHTNESS, "Brightness", "Brit"},
 		{CONTROLLER_MENU::HUE, "Hue", "COLr"},
-    }
+    };
 
     void Controller::initialize(siebenuhr_core::ClockType type)
     {
@@ -72,28 +71,29 @@ namespace esphome::siebenuhr
         m_menuCurPos = menu;
         m_menuPosLastTimeChange = millis();
 
-        debugMessage("MENU: %s (uid: %d)", m_menu[m_menuCurPos].name.c_str(), m_menu[m_menuCurPos].uid);
+        ESP_LOGE(TAG, "Switch MENU: %s (uid: %d)", m_menu[m_menuCurPos].name.c_str(), m_menu[m_menuCurPos].uid);
         
         switch (m_menuCurPos) {			
         case CONTROLLER_MENU::BRIGHTNESS:
             m_encoder->setEncoderBoundaries(5, 255, getDisplay()->getBrightness());
             break;
         case CONTROLLER_MENU::HUE: 
-            getDisplay()->setPersonality(siebenuhr_core::PersonalityType::SOLID_COLOR);
-            CHSV current_color = getDisplay()->getColor();
-            m_encoder->setEncoderBoundaries(0, 255, current_color.hue, true);
+            getDisplay()->setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR);
+            CRGB current_color = getDisplay()->getColor();
+            CHSV current_color_hsv = rgb2hsv_approximate(current_color);
+            m_encoder->setEncoderBoundaries(0, 255, current_color_hsv.hue, true);
             break;
         }
     }
 
     void Controller::handleMenuChange() 
     {
-        if(_pKnobEncoder->isButtonReleased()) 
+        if(m_encoder->isButtonReleased()) 
         {
             switch (m_menuCurPos) {			
-            case CONTROLLER_MENU::CLOCK: {
-                    CHSV current_color = getDisplay()->getColor();
-                    getDisplay()->setColor(current_color, 0);
+            case CONTROLLER_MENU::BRIGHTNESS: {
+                    // CRGB current_color = getDisplay()->getColor();                        
+                    // getDisplay()->setColor(current_color, 0);
                     getDisplay()->setNotification(" huE", 1500);
                     setMenu(CONTROLLER_MENU::HUE);
                     break;
