@@ -72,6 +72,34 @@ namespace esphome::siebenuhr
         return m_display;
     }
 
+    int calculateHue(const CRGB& color)
+    {
+        // Convert RGB to HSV hue value (0-255)
+        if (color.r == color.g && color.g == color.b) {
+            return 0; // Grayscale has no hue
+        }
+        
+        int max = color.r;
+        if (color.g > max) max = color.g;
+        if (color.b > max) max = color.b;
+        
+        int min = color.    r;
+        if (color.g < min) min = color.g; 
+        if (color.b < min) min = color.b;
+
+        int hue = 0;
+        if (max == color.r) {
+            hue = 43 * (color.g - color.b) / (max - min);
+        } else if (max == color.g) {
+            hue = 85 + 43 * (color.b - color.r) / (max - min);
+        } else {
+            hue = 171 + 43 * (color.r - color.g) / (max - min);
+        }
+
+        if (hue < 0) hue += 256;
+        return hue;
+    }   
+
     void Controller::setMenu(CONTROLLER_MENU menu) {
         m_menuCurPos = menu;
         m_menuPosLastTimeChange = millis();
@@ -81,7 +109,7 @@ namespace esphome::siebenuhr
         {
             int current_brightness = getDisplay()->getBrightness();
             m_encoder->setEncoderBoundaries(1, 255, current_brightness);
-            ESP_LOGI(TAG, "Switch to Option: %s, value=%d", m_menu[m_menuCurPos].name.c_str(), current_brightness);
+            ESP_LOGE(TAG, "Switch to Option: %s, value=%d", m_menu[m_menuCurPos].name.c_str(), current_brightness);
             break;
         }
         case CONTROLLER_MENU::HUE: 
@@ -89,9 +117,10 @@ namespace esphome::siebenuhr
             // TODO: discussion if when chaning the color the personality should be set to solid color or if it should remain the same
             // getDisplay()->setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR);
             CRGB current_color = getDisplay()->getColor();
-            CHSV current_color_hsv = rgb2hsv_approximate(current_color);
-            m_encoder->setEncoderBoundaries(0, 255, current_color_hsv.hue, true);
-            ESP_LOGI(TAG, "Switch to Option: %s, hue=%d", m_menu[m_menuCurPos].name.c_str(), current_color_hsv.hue);
+            int current_hue = calculateHue(current_color);
+
+            m_encoder->setEncoderBoundaries(0, 255, current_hue, true);
+            ESP_LOGE(TAG, "Switch to Option: %s, hue=%d", m_menu[m_menuCurPos].name.c_str(), current_hue);
             break;
         }
         }
@@ -209,6 +238,8 @@ namespace esphome::siebenuhr
 
         if (m_lightState != nullptr)
         {
+            // ESP_LOGV(TAG, "HUE READING= %d SENDING TO HA ==> (r:%d, g:%d, b:%d)", hue, color.red, color.green, color.blue);
+
             // send state change back to home assistant server
             m_lightState->make_call()
                 .set_color_mode(light::ColorMode::RGB)
@@ -258,7 +289,12 @@ namespace esphome::siebenuhr
         if (m_autoBrightnessEnabled)
         {
             m_currentBrightness = value;
-            m_encoder->setPosition(m_currentBrightness);
+            
+            if (m_menuCurPos == CONTROLLER_MENU::BRIGHTNESS)
+            {
+                m_encoder->setPosition(m_currentBrightness);
+            }
+
             ESP_LOGI(TAG, "Base-Brightness set to %d", m_currentBrightness);
         }
         else
@@ -267,7 +303,12 @@ namespace esphome::siebenuhr
             {
                 getDisplay()->setBrightness(value);
                 m_currentBrightness = getDisplay()->getBrightness();
-                m_encoder->setPosition(m_currentBrightness);
+
+                if (m_menuCurPos == CONTROLLER_MENU::BRIGHTNESS)
+                {
+                    m_encoder->setPosition(m_currentBrightness);
+                }
+
                 ESP_LOGV(TAG, "Brightness set to %d", value);
             }
         }
@@ -275,7 +316,12 @@ namespace esphome::siebenuhr
 
     void Controller::setColor(int r, int g, int b)
     {
-        getDisplay()->setColor(CRGB(r, g, b));
+        CRGB color = CRGB(r, g, b);
+
+        // int hue = calculateHue(color);
+        // ESP_LOGI(TAG, "HA SETTING  RGB(r:%d, g:%d, b:%d) ==> HUE POSITION= %d / %d", color.red, color.green, color.blue, hue);
+
+        getDisplay()->setColor(color);
     }
 
     void Controller::setText(const std::string &text)
