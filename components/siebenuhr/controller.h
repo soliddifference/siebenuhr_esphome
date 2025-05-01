@@ -5,6 +5,7 @@
 
 #include <siebenuhr_display.h>
 #include <siebenuhr_encoder.h>
+#include <siebenuhr_button.h>
 
 namespace esphome::siebenuhr
 {
@@ -53,6 +54,8 @@ namespace esphome::siebenuhr
         void initializeControls();
         void readAndPrintPowerMonitoring();
 
+        siebenuhr_core::ClockType m_clockType;
+
         bool m_autoBrightnessEnabled = false;
         bool m_powerMonitoringEnabled = false;
 
@@ -75,6 +78,8 @@ namespace esphome::siebenuhr
         uint32_t m_menuPosLastTimeChange;
         
         siebenuhr_core::UIKnob* m_encoder = nullptr;
+        siebenuhr_core::UIButton* m_button1 = nullptr;
+        siebenuhr_core::UIButton* m_button2 = nullptr;
         siebenuhr_core::Display *m_display = nullptr;
 
         light::LightState *m_lightState = nullptr;

@@ -18,6 +18,8 @@ namespace esphome::siebenuhr
 
     void Controller::initialize(siebenuhr_core::ClockType type)
     {
+        m_clockType = type;
+
         m_display = siebenuhr_core::Display::getInstance();
         if (m_display != nullptr)
         {
@@ -55,6 +57,9 @@ namespace esphome::siebenuhr
     {
         m_encoder = new siebenuhr_core::UIKnob(siebenuhr_core::constants::ROT_ENC_A_PIN, siebenuhr_core::constants::ROT_ENC_B_PIN, siebenuhr_core::constants::ROT_ENC_BUTTON_PIN);;
         m_encoder->setEncoderBoundaries(1, 255, 128, false);
+
+        m_button1 = new siebenuhr_core::UIButton(siebenuhr_core::constants::USER_BUTTON_PIN, siebenuhr_core::constants::LED1_PIN);        
+        m_button2 = new siebenuhr_core::UIButton(siebenuhr_core::constants::BOOT_BUTTON_PIN, siebenuhr_core::constants::LED2_PIN);
     }
 
     siebenuhr_core::Display *Controller::getDisplay()
@@ -99,35 +104,57 @@ namespace esphome::siebenuhr
             setMenu(CONTROLLER_MENU::BRIGHTNESS);
         }
 
-        // handle menu change
-        if(m_encoder->isButtonReleased()) 
+        // handle encoder changes
+        if (m_encoder != nullptr)
         {
-            switch (m_menuCurPos) {			
-            case CONTROLLER_MENU::BRIGHTNESS: {
-                    getDisplay()->setNotification(" huE", 1500);
-                    setMenu(CONTROLLER_MENU::HUE);
+            m_encoder->update();
+
+            if(m_encoder->isButtonReleased()) 
+            {
+                switch (m_menuCurPos) {			
+                case CONTROLLER_MENU::BRIGHTNESS: {
+                        getDisplay()->setNotification(" huE", 1500);
+                        setMenu(CONTROLLER_MENU::HUE);
+                        break;
+                    }
+                case CONTROLLER_MENU::HUE: {
+                        getDisplay()->setNotification("brit", 1500);
+                        setMenu(CONTROLLER_MENU::BRIGHTNESS);
+                        break;
+                    }
+                }
+            }
+
+            // handle manual value changes of the appropriate menu
+            if (m_encoder->hasPositionChanged()) 
+            {          
+                switch (m_menuCurPos) {
+                case CONTROLLER_MENU::BRIGHTNESS: {
+                    handleManualBrightnessChange();
                     break;
                 }
-            case CONTROLLER_MENU::HUE: {
-                    getDisplay()->setNotification("brit", 1500);
-                    setMenu(CONTROLLER_MENU::BRIGHTNESS);
+                case CONTROLLER_MENU::HUE: {
+                    handleManualHueChange();
                     break;
+                }
                 }
             }
         }
 
-        // handle manual value changes of the appropriate menu
-        if (m_encoder->hasPositionChanged()) 
-        {          
-            switch (m_menuCurPos) {
-            case CONTROLLER_MENU::BRIGHTNESS: {
-                handleManualBrightnessChange();
-                break;
-            }
-            case CONTROLLER_MENU::HUE: {
-                handleManualHueChange();
-                break;
-            }
+        if (m_button1 && m_button2)
+        {
+            m_button1->update();
+            m_button2->update();    
+
+            if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
+            {
+                if (m_button1->isPressed()) {
+                    getDisplay()->selectAdjacentPersonality(1);
+                }
+            
+                if (m_button2->isPressed()) {
+                    getDisplay()->selectAdjacentPersonality(-1);
+                }
             }
         }
     }   
@@ -198,11 +225,7 @@ namespace esphome::siebenuhr
 
     void Controller::update()
     {
-        if (m_encoder != nullptr) 
-        {
-            m_encoder->update();
-            handleMenuChange();
-        }
+        handleMenuChange();
     
         if (m_autoBrightnessEnabled && m_isBH1750Initialized) 
         {
