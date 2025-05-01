@@ -151,11 +151,11 @@ namespace esphome::siebenuhr
             if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
             {                
                 if (m_button1->isPressed()) {
-                    getDisplay()->selectAdjacentPersonality(1);
+                    getDisplay()->selectAdjacentPersonality(-1);
                 }
             
                 if (m_button2->isPressed()) {
-                    getDisplay()->selectAdjacentPersonality(-1);
+                    getDisplay()->selectAdjacentPersonality(1);
                 }
             }
         }
@@ -204,8 +204,8 @@ namespace esphome::siebenuhr
 
     void Controller::handleManualHueChange()
     {
-        int hue = m_encoder->getPosition();
-        CRGB color = CHSV((255-hue)%255, 255, 255);
+        int hue = m_encoder->getPosition() % 255;
+        CRGB color = CHSV(hue, 255, 255);
 
         if (m_lightState != nullptr)
         {
