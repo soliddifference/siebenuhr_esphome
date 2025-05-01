@@ -53,7 +53,7 @@ light:
     name: Siebenuhr
     restore_mode: RESTORE_DEFAULT_ON 
     type: REGULAR
-    personality: RAINBOW
+    personality: SOLIDCOLOR
     # auto_brightness: True
     power_monitoring: True
     time_id: sntp_time

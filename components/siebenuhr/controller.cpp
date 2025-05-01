@@ -86,7 +86,8 @@ namespace esphome::siebenuhr
         }
         case CONTROLLER_MENU::HUE: 
         {
-            getDisplay()->setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR);
+            // TODO: discussion if when chaning the color the personality should be set to solid color or if it should remain the same
+            // getDisplay()->setPersonality(siebenuhr_core::PersonalityType::PERSONALITY_SOLIDCOLOR);
             CRGB current_color = getDisplay()->getColor();
             CHSV current_color_hsv = rgb2hsv_approximate(current_color);
             m_encoder->setEncoderBoundaries(0, 255, current_color_hsv.hue, true);
@@ -138,6 +139,7 @@ namespace esphome::siebenuhr
                     break;
                 }
                 }
+                m_menuPosLastTimeChange = millis(); // reset timeout
             }
         }
 
@@ -147,7 +149,7 @@ namespace esphome::siebenuhr
             m_button2->update();    
 
             if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
-            {
+            {                
                 if (m_button1->isPressed()) {
                     getDisplay()->selectAdjacentPersonality(1);
                 }
@@ -203,7 +205,7 @@ namespace esphome::siebenuhr
     void Controller::handleManualHueChange()
     {
         int hue = m_encoder->getPosition();
-        CRGB color = CHSV(hue, 255, 255);
+        CRGB color = CHSV((255-hue)%255, 255, 255);
 
         if (m_lightState != nullptr)
         {
