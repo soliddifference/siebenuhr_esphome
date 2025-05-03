@@ -24,7 +24,7 @@ namespace esphome::siebenuhr
         if (m_display != nullptr)
         {
             m_display->initialize(type, 4);
-            m_display->setHeartbeatEnabled(true);
+            m_display->setHeartbeatEnabled(false);
 
             Wire.begin(siebenuhr_core::constants::SDA_PIN, siebenuhr_core::constants::SCL_PIN);
             if (g_bh1750.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) 
@@ -58,8 +58,8 @@ namespace esphome::siebenuhr
         m_encoder = new siebenuhr_core::UIKnob(siebenuhr_core::constants::ROT_ENC_A_PIN, siebenuhr_core::constants::ROT_ENC_B_PIN, siebenuhr_core::constants::ROT_ENC_BUTTON_PIN);;
         m_encoder->setEncoderBoundaries(1, 255, 128, false);
 
-        m_button1 = new siebenuhr_core::UIButton(siebenuhr_core::constants::USER_BUTTON_PIN, siebenuhr_core::constants::LED1_PIN);        
-        m_button2 = new siebenuhr_core::UIButton(siebenuhr_core::constants::BOOT_BUTTON_PIN, siebenuhr_core::constants::LED2_PIN);
+        m_button1 = new siebenuhr_core::UIButton(siebenuhr_core::constants::USER_BUTTON_PIN, siebenuhr_core::constants::LED4_PIN);
+        m_button2 = new siebenuhr_core::UIButton(siebenuhr_core::constants::BOOT_BUTTON_PIN, siebenuhr_core::constants::LED3_PIN);
     }
 
     siebenuhr_core::Display *Controller::getDisplay()
@@ -179,6 +179,16 @@ namespace esphome::siebenuhr
 
             if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
             {                
+                if (m_button1->isPressed()) {
+                    getDisplay()->selectAdjacentPersonality(-1);
+                }
+            
+                if (m_button2->isPressed()) {
+                    getDisplay()->selectAdjacentPersonality(1);
+                }
+            }
+            else if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_MINI)
+            {
                 if (m_button1->isPressed()) {
                     getDisplay()->selectAdjacentPersonality(-1);
                 }
