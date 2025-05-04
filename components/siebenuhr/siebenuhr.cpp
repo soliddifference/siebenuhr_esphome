@@ -28,11 +28,23 @@ namespace esphome::siebenuhr {
         if (m_timeComponent && m_timeComponent->now().is_valid())
         {
             auto current_time = m_timeComponent->now();
-            if (m_currentHours != current_time.hour || m_currentMinutes != current_time.minute)
+            if (true)
             {
-                m_controller.setTime(current_time.hour, current_time.minute);
-                m_currentHours = current_time.hour;
-                m_currentMinutes = current_time.minute;
+                if (m_currentHours != current_time.hour || m_currentMinutes != current_time.second)
+                {
+                    m_controller.setTime(current_time.minute, current_time.second);
+                    m_currentHours = current_time.minute;
+                    m_currentMinutes = current_time.second;
+                }
+            }
+            else
+            {
+                if (m_currentHours != current_time.hour || m_currentMinutes != current_time.minute)
+                {
+                    m_controller.setTime(current_time.hour, current_time.minute);
+                    m_currentHours = current_time.hour;
+                    m_currentMinutes = current_time.minute;
+                }
             }
         }
         #endif
