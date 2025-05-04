@@ -28,7 +28,7 @@ namespace esphome::siebenuhr {
         if (m_timeComponent && m_timeComponent->now().is_valid())
         {
             auto current_time = m_timeComponent->now();
-            if (true)
+            if (false)
             {
                 // fast version (minutes and seconds) for testing
                 if (m_currentHours != current_time.minute || m_currentMinutes != current_time.second)
