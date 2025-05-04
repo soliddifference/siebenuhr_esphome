@@ -30,7 +30,8 @@ namespace esphome::siebenuhr {
             auto current_time = m_timeComponent->now();
             if (true)
             {
-                if (m_currentHours != current_time.hour || m_currentMinutes != current_time.second)
+                // fast version (minutes and seconds) for testing
+                if (m_currentHours != current_time.minute || m_currentMinutes != current_time.second)
                 {
                     m_controller.setTime(current_time.minute, current_time.second);
                     m_currentHours = current_time.minute;
@@ -126,6 +127,10 @@ namespace esphome::siebenuhr {
         else if (personality == "MOSAIK")
         {
             m_personality = siebenuhr_core::PersonalityType::PERSONALITY_MOSAIK;
+        }
+        else if (personality == "GLITTER")
+        {
+            m_personality = siebenuhr_core::PersonalityType::PERSONALITY_GLITTER;
         }
         else
         {

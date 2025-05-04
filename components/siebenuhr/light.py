@@ -19,7 +19,7 @@ CONFIG_SCHEMA = light.BRIGHTNESS_ONLY_LIGHT_SCHEMA.extend(
         cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
         cv.Optional(CONF_AUTO_BRIGHTNESS, default=False): cv.boolean,
         cv.Optional(CONF_POWER_MONITORING, default=False): cv.boolean,
-        cv.Required(CONF_PERSONALITY): cv.one_of("SOLIDCOLOR", "COLORWHEEL", "RAINBOW", "MOSAIK", upper=True),
+        cv.Required(CONF_PERSONALITY): cv.one_of("SOLIDCOLOR", "COLORWHEEL", "RAINBOW", "MOSAIK", "GLITTER", upper=True),
     }
 )
 
