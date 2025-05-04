@@ -28,11 +28,24 @@ namespace esphome::siebenuhr {
         if (m_timeComponent && m_timeComponent->now().is_valid())
         {
             auto current_time = m_timeComponent->now();
-            if (m_currentHours != current_time.hour || m_currentMinutes != current_time.minute)
+            if (false)
             {
-                m_controller.setTime(current_time.hour, current_time.minute);
-                m_currentHours = current_time.hour;
-                m_currentMinutes = current_time.minute;
+                // fast version (minutes and seconds) for testing
+                if (m_currentHours != current_time.minute || m_currentMinutes != current_time.second)
+                {
+                    m_controller.setTime(current_time.minute, current_time.second);
+                    m_currentHours = current_time.minute;
+                    m_currentMinutes = current_time.second;
+                }
+            }
+            else
+            {
+                if (m_currentHours != current_time.hour || m_currentMinutes != current_time.minute)
+                {
+                    m_controller.setTime(current_time.hour, current_time.minute);
+                    m_currentHours = current_time.hour;
+                    m_currentMinutes = current_time.minute;
+                }
             }
         }
         #endif
@@ -114,6 +127,10 @@ namespace esphome::siebenuhr {
         else if (personality == "MOSAIK")
         {
             m_personality = siebenuhr_core::PersonalityType::PERSONALITY_MOSAIK;
+        }
+        else if (personality == "GLITTER")
+        {
+            m_personality = siebenuhr_core::PersonalityType::PERSONALITY_GLITTER;
         }
         else
         {
