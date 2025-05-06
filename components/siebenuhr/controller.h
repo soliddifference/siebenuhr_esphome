@@ -42,6 +42,7 @@ namespace esphome::siebenuhr
         void setColor(int r, int g, int b);
 
         void setText(const std::string &text);
+        void setNotification(const std::string &text, int duration = 2000);
         void setTime(int hours, int minutes);
 
         void setAutoBrightnessEnabled(bool isEnabled);

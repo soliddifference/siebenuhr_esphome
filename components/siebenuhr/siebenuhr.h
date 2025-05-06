@@ -32,6 +32,7 @@ class SiebenuhrClock : public light::LightOutput, public Component
         void set_auto_brightness(bool enable);
         void set_power_monitoring(bool enable);
         void set_text(std::string text);
+        void set_notification(std::string text, int duration = 2000);
         void set_personality(std::string rendererName);
 
         #ifdef WITH_WIFI

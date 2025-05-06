@@ -340,6 +340,12 @@ namespace esphome::siebenuhr
         ESP_LOGI(TAG, "SET: text=%s", text.c_str());
     }
 
+    void Controller::setNotification(const std::string &text, int duration)
+    {
+        getDisplay()->setNotification(text, duration);
+        ESP_LOGI(TAG, "Notification set: %s duration=%d", text.c_str(), duration);
+    }
+
     void Controller::setTime(int hours, int minutes) 
     {
         m_hours = hours;

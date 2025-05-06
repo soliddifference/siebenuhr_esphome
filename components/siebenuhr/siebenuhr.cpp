@@ -108,6 +108,11 @@ namespace esphome::siebenuhr {
         m_controller.setText(text);
     }
 
+    void SiebenuhrClock::set_notification(std::string text, int duration)
+    {
+        m_controller.setNotification(text, duration);
+    }
+
     void SiebenuhrClock::set_personality(std::string personality)
     {
         ESP_LOGI(TAG, "SET: Personality: %s", personality.c_str());

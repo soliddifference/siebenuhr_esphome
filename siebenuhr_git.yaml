@@ -66,4 +66,4 @@ text:
         #     args: [x.c_str()]
         - lambda: |-
             // esphome::siebenuhr::global_siebenuhr_clock->set_color(CRBG(255,0,0));
-            esphome::siebenuhr::global_siebenuhr_clock->set_text(x);
+            esphome::siebenuhr::global_siebenuhr_clock->set_set_notification(x, 4000);

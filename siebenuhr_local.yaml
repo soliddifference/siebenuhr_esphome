@@ -73,4 +73,5 @@ text:
     set_action:
       then:
         - lambda: |-
-            esphome::siebenuhr::global_siebenuhr_clock->set_text(x);
+            // esphome::siebenuhr::global_siebenuhr_clock->set_text(x);
+            esphome::siebenuhr::global_siebenuhr_clock->set_notification(x, 4000);
