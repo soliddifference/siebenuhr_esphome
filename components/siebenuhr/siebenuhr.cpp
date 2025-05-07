@@ -65,7 +65,7 @@ namespace esphome::siebenuhr {
         m_controller.setLightState(state);
 
         // Handle power (on/off)
-        bool is_on =  state->current_values.is_on();
+        bool is_on = state->current_values.is_on();
         m_controller.setPower(is_on);
 
         // Handle brightness (0.0 - 1.0 float)
