@@ -179,21 +179,22 @@ namespace esphome::siebenuhr
 
             if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
             {                
-                if (m_button1->isPressed()) {
+                if (m_button1->getClickType() == siebenuhr_core::ClickType::Single) {
                     getDisplay()->selectAdjacentPersonality(-1);
                 }
-            
-                if (m_button2->isPressed()) {
+                if (m_button2->getClickType() == siebenuhr_core::ClickType::Single) {
                     getDisplay()->selectAdjacentPersonality(1);
                 }
             }
             else if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_MINI)
             {
-                if (m_button1->isPressed()) {
+                // todo: add single click and long press actions for brightness and hue config
+
+                // change personality on double click
+                if (m_button1->getClickType() == siebenuhr_core::ClickType::Double) {
                     getDisplay()->selectAdjacentPersonality(-1);
                 }
-            
-                if (m_button2->isPressed()) {
+                if (m_button2->getClickType() == siebenuhr_core::ClickType::Double) {
                     getDisplay()->selectAdjacentPersonality(1);
                 }
             }
