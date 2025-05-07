@@ -205,6 +205,7 @@ namespace esphome::siebenuhr
                     }
                 }
 
+                // handle long press for brightness change
                 if (m_button1->isLongPress() || m_button2->isLongPress())
                 {
                     handleManualBrightnessChange();
