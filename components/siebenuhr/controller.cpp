@@ -189,12 +189,34 @@ namespace esphome::siebenuhr
             else if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_MINI)
             {
                 // todo: add single click and long press actions for brightness and hue config
+                if (m_button1->getClickType() == siebenuhr_core::ClickType::Single || m_button2->getClickType() == siebenuhr_core::ClickType::Single) 
+                {
+                    switch (m_menuCurPos) {			
+                    case CONTROLLER_MENU::BRIGHTNESS: {
+                            getDisplay()->setNotification(" huE", 1500);
+                            setMenu(CONTROLLER_MENU::HUE);
+                            break;
+                        }
+                    case CONTROLLER_MENU::HUE: {
+                            getDisplay()->setNotification("brit", 1500);
+                            setMenu(CONTROLLER_MENU::BRIGHTNESS);
+                            break;
+                        }
+                    }
+                }
+
+                if (m_button1->isLongPress() || m_button2->isLongPress())
+                {
+                    handleManualBrightnessChange();
+                }
 
                 // change personality on double click
-                if (m_button1->getClickType() == siebenuhr_core::ClickType::Double) {
+                if (m_button1->getClickType() == siebenuhr_core::ClickType::Double) 
+                {
                     getDisplay()->selectAdjacentPersonality(-1);
                 }
-                if (m_button2->getClickType() == siebenuhr_core::ClickType::Double) {
+                if (m_button2->getClickType() == siebenuhr_core::ClickType::Double) 
+                {
                     getDisplay()->selectAdjacentPersonality(1);
                 }
             }
@@ -203,9 +225,28 @@ namespace esphome::siebenuhr
 
     void Controller::handleManualBrightnessChange()
     {
+        long brightness = m_currentBrightness; 
+
+        if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
+        {
+            brightness = m_encoder->getPosition(); 
+        }
+        else
+        {
+            if (m_button1->isLongPress())
+            {
+                brightness -= 1;
+            }
+            if (m_button2->isLongPress())
+            {
+                brightness += 1;
+            }
+            clamp(brightness, 1, 255);
+        }
+
+
         if (m_autoBrightnessEnabled)
         {
-            long brightness = m_encoder->getPosition(); 
             // send state change back to home assistant server
             if (m_lightState != nullptr)
             {
@@ -222,7 +263,6 @@ namespace esphome::siebenuhr
         }
         else
         {
-            long brightness = m_encoder->getPosition(); 
             if (brightness != getDisplay()->getBrightness())
             {
                 // send state change back to home assistant server
