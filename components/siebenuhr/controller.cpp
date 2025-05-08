@@ -129,10 +129,10 @@ namespace esphome::siebenuhr
     void Controller::handleMenuChange() 
     {
         // menu timeout, switch back to brightness setting
-        if (m_menuCurPos != CONTROLLER_MENU::BRIGHTNESS && (millis() - m_menuPosLastTimeChange) > 10000) 
-        {
-            setMenu(CONTROLLER_MENU::BRIGHTNESS);
-        }
+        // if (m_menuCurPos != CONTROLLER_MENU::BRIGHTNESS && (millis() - m_menuPosLastTimeChange) > 20000) 
+        // {
+        //     setMenu(CONTROLLER_MENU::BRIGHTNESS);
+        // }
 
         // handle encoder changes
         if (m_encoder != nullptr)
@@ -174,24 +174,24 @@ namespace esphome::siebenuhr
 
         if (m_button1 && m_button2)
         {
-            m_button1->update();
-            m_button2->update();    
+            auto button1_state = m_button1->update();
+            auto button2_state = m_button2->update();    
 
             if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
             {                
-                if (m_button1->getClickType() == siebenuhr_core::ClickType::Single) {
+                if (button1_state == siebenuhr_core::ButtonState::SingleClick) {
                     getDisplay()->selectAdjacentPersonality(-1);
                 }
-                if (m_button2->getClickType() == siebenuhr_core::ClickType::Single) {
+                if (button2_state == siebenuhr_core::ButtonState::SingleClick) {
                     getDisplay()->selectAdjacentPersonality(1);
                 }
             }
             else if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_MINI)
             {
-                // todo: add single click and long press actions for brightness and hue config
-                if (m_button1->getClickType() == siebenuhr_core::ClickType::Single || m_button2->getClickType() == siebenuhr_core::ClickType::Single) 
+                // single click and long press actions for brightness and hue config
+                if (button1_state == siebenuhr_core::ButtonState::SingleClick || button2_state == siebenuhr_core::ButtonState::SingleClick) 
                 {
-                    switch (m_menuCurPos) {			
+                    switch (m_menuCurPos) {
                     case CONTROLLER_MENU::BRIGHTNESS: {
                             getDisplay()->setNotification(" huE", 1500);
                             setMenu(CONTROLLER_MENU::HUE);
@@ -203,27 +203,78 @@ namespace esphome::siebenuhr
                             break;
                         }
                     }
-                }
-
+                } 
                 // handle long press for brightness change
-                if (m_button1->isLongPress() || m_button2->isLongPress())
+                else if (m_button1->isLongPress() || m_button2->isLongPress())
                 {
-                    handleManualBrightnessChange();
+                    switch (m_menuCurPos) {
+                    case CONTROLLER_MENU::BRIGHTNESS: {
+                        handleManualBrightnessChange();
+                        break;
+                    }
+                    case CONTROLLER_MENU::HUE: {
+                        handleManualHueChange();
+                        break;
+                    }
+                    }
+                }
+                else if (button1_state == siebenuhr_core::ButtonState::LongClick || button2_state == siebenuhr_core::ButtonState::LongClick) 
+                {
+                    if ( m_menuCurPos == CONTROLLER_MENU::HUE) 
+                    {
+                        CRGB color = CHSV(m_currentHue, 255, 255);
+                        if (!sendColorToHomeAssistant(color))
+                        {
+                            getDisplay()->setColor(color);
+                        }
+                        m_currentHue = -1;
+                    }
                 }
 
                 // change personality on double click
-                if (m_button1->getClickType() == siebenuhr_core::ClickType::Double) 
-                {
-                    getDisplay()->selectAdjacentPersonality(-1);
-                }
-                if (m_button2->getClickType() == siebenuhr_core::ClickType::Double) 
-                {
-                    getDisplay()->selectAdjacentPersonality(1);
-                }
+                // if (m_button1->getClickType() == siebenuhr_core::ClickType::Double) 
+                // {
+                //     getDisplay()->selectAdjacentPersonality(-1);
+                // }
+                // if (m_button2->getClickType() == siebenuhr_core::ClickType::Double) 
+                // {
+                //     getDisplay()->selectAdjacentPersonality(1);
+                // }
             }
         }
     }   
 
+    bool Controller::sendBrightnessToHomeAssistant(int brightness)
+    {
+        if (m_lightState != nullptr)
+        {
+            m_lightState->make_call()
+                .set_color_mode(light::ColorMode::RGB)
+                .set_brightness((float)brightness / 255.0f)
+                .perform();
+            // -> this will send a proper set brightness change back to the clock!
+            return true;
+        }
+        return false;
+    }
+
+    bool Controller::sendColorToHomeAssistant(CRGB color)
+    {
+        if (m_lightState != nullptr)
+        {
+            // ESP_LOGV(TAG, "HUE READING= %d SENDING TO HA ==> (r:%d, g:%d, b:%d)", hue, color.red, color.green, color.blue);
+            m_lightState->make_call()
+                .set_color_mode(light::ColorMode::RGB)
+                .set_red((float)color.red / 255.0f)
+                .set_green((float)color.green / 255.0f)
+                .set_blue((float)color.blue / 255.0f)
+                .perform();
+            // -> this will send a proper set color change back to the clock!
+            return true;
+        }
+        return false;
+    }
+    
     void Controller::handleManualBrightnessChange()
     {
         long brightness = m_currentBrightness; 
@@ -238,26 +289,17 @@ namespace esphome::siebenuhr
             {
                 brightness -= 1;
             }
-            if (m_button2->isLongPress())
+            else if (m_button2->isLongPress())
             {
                 brightness += 1;
             }
-            clamp(brightness, 1, 255);
+            brightness = clamp(brightness, 1L, 255L);
         }
-
 
         if (m_autoBrightnessEnabled)
         {
             // send state change back to home assistant server
-            if (m_lightState != nullptr)
-            {
-                m_lightState->make_call()
-                    .set_color_mode(light::ColorMode::RGB)
-                    .set_brightness((float)brightness / 255.0f)
-                    .perform();
-                // -> this will send a proper set brightness change back to the clock!
-            }
-            else 
+            if (!sendBrightnessToHomeAssistant(brightness))
             {
                 m_currentBrightness = brightness;
             }
@@ -267,15 +309,7 @@ namespace esphome::siebenuhr
             if (brightness != getDisplay()->getBrightness())
             {
                 // send state change back to home assistant server
-                if (m_lightState != nullptr)
-                {
-                    m_lightState->make_call()
-                        .set_color_mode(light::ColorMode::RGB)
-                        .set_brightness((float)brightness / 255.0f)
-                        .perform();
-                    // -> this will send a proper set brightness change back to the clock!
-                }
-                else 
+                if (!sendBrightnessToHomeAssistant(brightness))
                 {
                     getDisplay()->setBrightness(brightness);
                 }
@@ -285,25 +319,49 @@ namespace esphome::siebenuhr
 
     void Controller::handleManualHueChange()
     {
-        int hue = m_encoder->getPosition() % 255;
-        CRGB color = CHSV(hue, 255, 255);
-
-        if (m_lightState != nullptr)
+        CRGB color = getDisplay()->getColor();
+        if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
         {
-            // ESP_LOGV(TAG, "HUE READING= %d SENDING TO HA ==> (r:%d, g:%d, b:%d)", hue, color.red, color.green, color.blue);
-
-            // send state change back to home assistant server
-            m_lightState->make_call()
-                .set_color_mode(light::ColorMode::RGB)
-                .set_red((float)color.red / 255.0f)
-                .set_green((float)color.green / 255.0f)
-                .set_blue((float)color.blue / 255.0f)
-                .perform();
-            // -> this will send a proper set hue change back to the clock!
+            int hue = m_encoder->getPosition() % 255;
+            color = CHSV(hue, 255, 255);
         }
         else
         {
-            // implicite conversion to CRGB
+            // using float here for higher resolution
+            if (m_currentHue == -1) 
+            {
+                m_currentHue = calculateHue(getDisplay()->getColor());
+            }
+
+            if (m_button1->isLongPress())
+            {
+                m_currentHue -= .1;
+                if (m_currentHue < 0)
+                {
+                    m_currentHue += 255.0f;
+                }
+            }
+            else if (m_button2->isLongPress())
+            {
+                m_currentHue += .1;
+                if (m_currentHue > 255.0f)
+                {
+                    m_currentHue -= 255.0f;
+                }
+            }
+            color = CHSV(((int)m_currentHue) % 255, 255, 255);
+            ESP_LOGI(TAG, "HUE CHANGE: %f", m_currentHue);
+        }
+
+        if (m_clockType == siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR)
+        {
+            if (!sendColorToHomeAssistant(color))
+            {
+                getDisplay()->setColor(color);
+            }
+        }
+        else
+        {
             getDisplay()->setColor(color);
         }
     }   

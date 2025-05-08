@@ -55,6 +55,9 @@ namespace esphome::siebenuhr
         void initializeControls();
         void readAndPrintPowerMonitoring();
 
+        bool sendBrightnessToHomeAssistant(int brightness);
+        bool sendColorToHomeAssistant(CRGB color);
+
         siebenuhr_core::ClockType m_clockType;
 
         bool m_autoBrightnessEnabled = false;
@@ -64,6 +67,7 @@ namespace esphome::siebenuhr
         int m_minutes = -1;
         
         CRGB m_currentColor = CRGB::Black;
+        float m_currentHue = -1; // only used for mini clock
         int m_currentBrightness = 0;
 
         inline bool isTimeSet() 
