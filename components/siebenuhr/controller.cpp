@@ -229,17 +229,16 @@ namespace esphome::siebenuhr
                         }
                         m_currentHue = -1;
                     }
-                }
-
+                }                  
                 // change personality on double click
-                // if (m_button1->getClickType() == siebenuhr_core::ClickType::Double) 
-                // {
-                //     getDisplay()->selectAdjacentPersonality(-1);
-                // }
-                // if (m_button2->getClickType() == siebenuhr_core::ClickType::Double) 
-                // {
-                //     getDisplay()->selectAdjacentPersonality(1);
-                // }
+                else if (button1_state == siebenuhr_core::ButtonState::DoubleClick) 
+                {
+                    getDisplay()->selectAdjacentPersonality(-1);
+                }
+                else if (button2_state == siebenuhr_core::ButtonState::DoubleClick) 
+                {
+                    getDisplay()->selectAdjacentPersonality(1);
+                }
             }
         }
     }   
