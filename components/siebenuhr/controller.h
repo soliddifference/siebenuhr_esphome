@@ -8,9 +8,7 @@ namespace esphome::siebenuhr {
 
 class Controller : public siebenuhr_core::BaseController {
 public:
-    Controller();
-    void setup();
-
+    // Controller();
     void setLightState(light::LightState *state);
 
 protected:

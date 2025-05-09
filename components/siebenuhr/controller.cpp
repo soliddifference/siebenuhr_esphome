@@ -2,12 +2,8 @@
 
 namespace esphome::siebenuhr {
 
-Controller::Controller() {
-}
-
-void Controller::setup() {
-    initialize(siebenuhr_core::ClockType::CLOCK_TYPE_REGULAR);
-}
+// Controller::Controller() {
+// }
 
 void Controller::setLightState(light::LightState *state) {
     m_lightState = state;
