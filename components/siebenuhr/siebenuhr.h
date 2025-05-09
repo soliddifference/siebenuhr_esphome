@@ -6,6 +6,7 @@
 #include "esphome/core/component.h"
 
 #include "esphome/components/light/light_output.h"
+#include "esphome/components/logger/logger.h"
 
 #define WITH_WIFI
 #ifdef WITH_WIFI
