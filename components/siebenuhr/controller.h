@@ -1,6 +1,7 @@
 #pragma once
 
 #include "siebenuhr_controller.h"
+#include "siebenuhr_color.h"
 
 #include "esphome/components/light/light_state.h"
 

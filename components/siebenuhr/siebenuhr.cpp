@@ -80,10 +80,10 @@ namespace esphome::siebenuhr {
         m_controller.setBrightness(static_cast<int>(brightness * 255.0f));
 
         // Handle color (RGB values between 0.0 and 1.0)
-        float red = state->current_values.get_red();
-        float green = state->current_values.get_green();
-        float blue = state->current_values.get_blue();
-        m_controller.setColor(static_cast<int>(red * 255.0f), static_cast<int>(green * 255.0f), static_cast<int>(blue * 255.0f));
+        auto color = siebenuhr_core::Color(state->current_values.get_red(), state->current_values.get_green(), state->current_values.get_blue());
+        LOG_D("setting HA color: %d %d %d (hue %f)", color.getCRGB().r, color.getCRGB().g, color.getCRGB().b, color.getHue());
+
+        m_controller.setColor(color);
     }
 
     void SiebenuhrClock::dump_config() 

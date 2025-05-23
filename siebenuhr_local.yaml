@@ -26,17 +26,15 @@ external_components:
     refresh: 0s
 
 logger:
-  # level: ERROR
+  level: INFO
 
 api:
   encryption:
     key: !secret apiKey
-    #key: "<insert_your_key_here>"
 
 ota:
   - platform: esphome
     password: !secret otaPassword
-    # password: "<insert_your_password_here>"
 
 wifi:
   ssid: !secret wifi_ssid

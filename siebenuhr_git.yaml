@@ -27,11 +27,15 @@ external_components:
     refresh: 0s
 
 logger:
+  # level: ERROR
 
 api:
+  encryption:
+    key: !secret apiKey
 
 ota:
   - platform: esphome
+    password: !secret otaPassword
 
 wifi:
   ssid: !secret wifi_ssid
@@ -46,7 +50,7 @@ light:
     id: my_siebenuhr
     name: Siebenuhr
     restore_mode: RESTORE_DEFAULT_ON 
-    type: REGULAR
+    type: MINI
     personality: SOLIDCOLOR
     # auto_brightness: True
     power_monitoring: True

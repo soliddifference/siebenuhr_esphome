@@ -28,6 +28,7 @@ bool Controller::sendColorToHomeAssistant(CRGB color) {
             .set_green((float)color.green / 255.0f)
             .set_blue((float)color.blue / 255.0f)
             .perform();
+        LOG_D("Color sent to Home Assistant: %d %d %d", color.red, color.green, color.blue);
         return true;
     }
     return false;
