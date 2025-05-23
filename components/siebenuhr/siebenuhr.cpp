@@ -2,7 +2,7 @@
 
 namespace esphome::siebenuhr {
 
-    const char *const TAG = "🚀 Siebenuhr";
+    const char *const TAG = "⏰ Siebenuhr";
 
     SiebenuhrClock *global_siebenuhr_clock = nullptr;
     
@@ -14,6 +14,13 @@ namespace esphome::siebenuhr {
 
         ESP_LOGI(TAG, "Setting up Siebenuhr Clock...");       
         
+        auto *log = logger::global_logger;
+        if (log != nullptr)
+        {
+            auto level = log->level_for(TAG);
+            m_controller.setLogLevel(level);
+        }
+
         // Initialize the controller with the stored personality
         m_controller.initialize(m_type);
         m_controller.setPersonality(m_personality);
@@ -81,7 +88,7 @@ namespace esphome::siebenuhr {
 
     void SiebenuhrClock::dump_config() 
     { 
-        ESP_LOGCONFIG(TAG, "Siebenuhr"); 
+        ESP_LOGCONFIG(TAG, "⏰ Siebenuhr"); 
     }
 
     void SiebenuhrClock::set_type(int type)
