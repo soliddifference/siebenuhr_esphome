@@ -2,9 +2,6 @@
 
 namespace esphome::siebenuhr {
 
-// Controller::Controller() {
-// }
-
 void Controller::setLightState(light::LightState *state) {
     m_lightState = state;
 }
@@ -34,4 +31,4 @@ bool Controller::sendColorToHomeAssistant(CRGB color) {
     return false;
 }
 
-} // namespace esphome::siebenuhr
+} 

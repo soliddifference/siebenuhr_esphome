@@ -9,7 +9,6 @@ namespace esphome::siebenuhr {
 
 class Controller : public siebenuhr_core::BaseController {
 public:
-    // Controller();
     void setLightState(light::LightState *state);
 
 protected:
@@ -20,4 +19,4 @@ private:
     light::LightState *m_lightState = nullptr;
 };
 
-} // namespace esphome::siebenuhr
+}
