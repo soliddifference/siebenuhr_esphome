@@ -11,7 +11,7 @@ esphome:
     - adafruit/Adafruit BusIO
     - adafruit/Adafruit INA219
     - igorantolic/Ai Esp32 Rotary Encoder
-    - https://github.com/soliddifference/siebenuhr_core.git
+    - siebenuhr_core=https://github.com/soliddifference/siebenuhr_core.git
 
 esp32:
   board: esp32dev
