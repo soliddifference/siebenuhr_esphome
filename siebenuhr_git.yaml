@@ -38,8 +38,8 @@ ota:
     password: !secret otaPassword
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: !secret wifiSSID
+  password: !secret wifiPassword
 
 time:
   - platform: sntp
