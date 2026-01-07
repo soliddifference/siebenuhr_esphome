@@ -11,7 +11,7 @@ esphome:
     - adafruit/Adafruit BusIO
     - adafruit/Adafruit INA219
     - igorantolic/Ai Esp32 Rotary Encoder
-    - https://github.com/soliddifference/siebenuhr_core.git
+    - siebenuhr_core=https://github.com/soliddifference/siebenuhr_core.git
 
 esp32:
   board: esp32dev
@@ -38,8 +38,8 @@ ota:
     password: !secret otaPassword
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: !secret wifiSSID
+  password: !secret wifiPassword
 
 time:
   - platform: sntp
@@ -69,5 +69,5 @@ text:
         #     format: "Received: %s"
         #     args: [x.c_str()]
         - lambda: |-
-            // esphome::siebenuhr::global_siebenuhr_clock->set_color(CRBG(255,0,0));
-            esphome::siebenuhr::global_siebenuhr_clock->set_set_notification(x, 4000);
+            // esphome::siebenuhr::global_siebenuhr_clock->set_text(x);
+            esphome::siebenuhr::global_siebenuhr_clock->set_notification(x, 4000);

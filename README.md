@@ -1,4 +1,5 @@
 # Siebenuhr ESPHome
+
 This repository develops siebenuhr_esphome, an ESPHome-compatible version of the Siebenuhr ESP32 firmware. It transitions the standalone PlatformIO-based firmware into n [ESPHome External Component](https://esphome.io/components/external_components.html).
 
 ---
@@ -16,21 +17,37 @@ Before proceeding, ensure you have the following installed:
 ## Getting Started
 
 ### Prerequisites
+
 1. Ensure you have [ESPHome](https://esphome.io/) installed and set up on your system.
 2. Clone the repository to your local machine:
    ```bash
    git clone https://github.com/soliddifference/siebenuhr_esphome
    cd siebenuhr_esphome
    ```
+3. Install uv: https://docs.astral.sh/uv/getting-started/installation/
+4. Run `uv sync`
+5. Activate the Python virtual environment
+
+```bash
+# macOS and Linux
+source .venv/bin/activate
+
+# Windows
+.venv\Scripts\activate
+```
 
 ### Configuration
+
 1. Make a copy of either `siebenuhr_git.yaml` or `siebenuhr_local.yaml`:
+
    - Use `siebenuhr_local.yaml` for development purposes as it refers to the local version of the code and is optimized for fast compile and testing iterations.
+
    ```bash
    cp siebenuhr_local.yaml your_modified_config.yaml
    ```
 
 2. Edit `your_modified_config.yaml` to configure it for your local environment:
+
    - Update the most critical settings, specifically WiFi credentials, in the `wifi` section:
      ```yaml
      wifi:
@@ -39,6 +56,7 @@ Before proceeding, ensure you have the following installed:
      ```
 
 3. **Switching to a Local Repository for Development:**
+
    - To work with a local version of the library during development, reference the library using a `file://` path instead of a GitHub URL. This allows for faster compile and testing without requiring Git commits.
 
      ```yaml
@@ -49,7 +67,9 @@ Before proceeding, ensure you have the following installed:
    - Replace the path above with the location of your locally checked-out repository.
 
 ### Compiling and Testing
+
 1. Test if your setup compiles by running:
+
    ```bash
    esphome compile your_modified_config.yaml
    ```

@@ -37,9 +37,9 @@ ota:
     password: !secret otaPassword
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  reboot_timeout: 0s  # disables reboot on failed Wi-Fi
+  ssid: !secret wifiSSID
+  password: !secret wifiPassword
+  reboot_timeout: 0s # disables reboot on failed Wi-Fi
   # fast_connect: on # Uncomment if you want to use fast connect, required for hidden SSID
 
 captive_portal:
