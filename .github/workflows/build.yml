@@ -48,10 +48,11 @@ jobs:
       
       - name: Create secrets.yaml for CI
         run: |
-          cat > secrets.yaml << 'EOF'
+          API_KEY=$(openssl rand -base64 32)
+          cat > secrets.yaml << EOF
           wifi_ssid: "test-network"
           wifi_password: "test-password"
-          apiKey: "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE="
+          apiKey: "${API_KEY}"
           otaPassword: "test-ota-password"
           EOF
       
