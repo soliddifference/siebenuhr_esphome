@@ -1,7 +1,11 @@
 esphome:
-  name: "siebenuhr"
-  friendly_name: SiebenUhr::Mini
-
+  name: siebenuhr
+  friendly_name: Siebenuhr
+  platformio_options:
+    build_flags:
+      - -D FASTLED_DITHER_ENABLED=0
+      - -D SENSOR_READ_INTERVAL_MS=5000
+      # - -D DOUBLE_CLICK_PERSONALITY_ENABLED
   libraries:
     - Fastled
     - RunningAverage
@@ -27,7 +31,7 @@ external_components:
     refresh: 0s
 
 logger:
-  # level: ERROR
+  level: INFO
 
 api:
   encryption:
@@ -38,8 +42,12 @@ ota:
     password: !secret otaPassword
 
 wifi:
-  ssid: !secret wifiSSID
-  password: !secret wifiPassword
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  reboot_timeout: 0s # disables reboot on failed Wi-Fi
+  # fast_connect: on # Uncomment if you want to use fast connect, required for hidden SSID
+
+captive_portal:
 
 time:
   - platform: sntp
@@ -50,13 +58,16 @@ light:
     id: my_siebenuhr
     name: Siebenuhr
     restore_mode: RESTORE_DEFAULT_ON 
-    type: MINI
+    type: MINI # 28 LEDs per digit
+    # type: REGULAR # 119 LEDs per digit (the big clock)
     personality: SOLIDCOLOR
+    # personality: COLORWHEEL
+    # personality: RAINBOW
+    # personality: MOSAIK
     # auto_brightness: True
     power_monitoring: True
     time_id: sntp_time
     default_transition_length: 0s
-
 
 text:
   - platform: template
@@ -65,9 +76,6 @@ text:
     name: "Siebenuhr Text Input"
     set_action:
       then:
-        # - logger.log:
-        #     format: "Received: %s"
-        #     args: [x.c_str()]
         - lambda: |-
             // esphome::siebenuhr::global_siebenuhr_clock->set_text(x);
             esphome::siebenuhr::global_siebenuhr_clock->set_notification(x, 4000);

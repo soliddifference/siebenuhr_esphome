@@ -1,6 +1,11 @@
 esphome:
   name: siebenuhr
   friendly_name: Siebenuhr
+  platformio_options:
+    build_flags:
+      - -D FASTLED_DITHER_ENABLED=0
+      - -D SENSOR_READ_INTERVAL_MS=5000
+      # - -D DOUBLE_CLICK_PERSONALITY_ENABLED
   libraries:
     - Fastled
     - RunningAverage
@@ -10,7 +15,7 @@ esphome:
     - adafruit/Adafruit BusIO
     - adafruit/Adafruit INA219
     - igorantolic/Ai Esp32 Rotary Encoder
-    - file://<insert_your_path_to_siebenuhr_core_here>
+    - file://${sysenv.PWD}/tmp/siebenuhr_core
 
 
 esp32:
@@ -37,8 +42,8 @@ ota:
     password: !secret otaPassword
 
 wifi:
-  ssid: !secret wifiSSID
-  password: !secret wifiPassword
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
   reboot_timeout: 0s # disables reboot on failed Wi-Fi
   # fast_connect: on # Uncomment if you want to use fast connect, required for hidden SSID
 
@@ -53,7 +58,8 @@ light:
     id: my_siebenuhr
     name: Siebenuhr
     restore_mode: RESTORE_DEFAULT_ON 
-    type: REGULAR # alternate value: MINI
+    type: MINI # 28 LEDs per segment
+    # type: REGULAR # 119 LEDs per segment (the big clock)
     personality: COLORWHEEL
     # personality: SOLIDCOLOR
     # personality: RAINBOW

@@ -6,3 +6,4 @@ secrets.yaml
 .vscode
 *.pyc
 __pycache__/
+tmp/
