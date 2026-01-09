@@ -51,7 +51,7 @@ jobs:
           cat > secrets.yaml << 'EOF'
           wifi_ssid: "test-network"
           wifi_password: "test-password"
-          apiKey: "dGVzdC1hcGkta2V5LWZvci1jaS1idWlsZA=="
+          apiKey: "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE="
           otaPassword: "test-ota-password"
           EOF
       
