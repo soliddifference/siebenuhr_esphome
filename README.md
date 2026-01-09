@@ -1,5 +1,7 @@
 # Siebenuhr ESPHome
 
+[![Build](https://github.com/soliddifference/siebenuhr_esphome/actions/workflows/build.yml/badge.svg)](https://github.com/soliddifference/siebenuhr_esphome/actions/workflows/build.yml)
+
 ESPHome (for Home Assistant) integration with **Siebenuhr 7-segment LED clocks**. This component wraps the [siebenuhr_core](https://github.com/soliddifference/siebenuhr_core) library as an [ESPHome External Component](https://esphome.io/components/external_components.html), enabling Home Assistant integration with OTA updates, WiFi config, and light controls.
 
 The hardwareclocks can be ordered from our web shop at [soliddifference.com](https://soliddifference.com/)
