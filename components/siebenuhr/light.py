@@ -10,7 +10,7 @@ CONF_PERSONALITY = "personality"
 CONF_POWER_MONITORING = "power_monitoring"
 
 empty_light_ns = cg.esphome_ns.namespace("siebenuhr")
-EmptyLightOutput = empty_light_ns.class_("SiebenuhrClock", light.LightOutput)
+EmptyLightOutput = empty_light_ns.class_("SiebenuhrClock", light.LightOutput, cg.Component)
 
 CONFIG_SCHEMA = light.BRIGHTNESS_ONLY_LIGHT_SCHEMA.extend(
     {
@@ -25,6 +25,7 @@ CONFIG_SCHEMA = light.BRIGHTNESS_ONLY_LIGHT_SCHEMA.extend(
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_OUTPUT_ID])
+    await cg.register_component(var, config)
     await light.register_light(var, config)
 
     if CONF_TIME_ID in config:
@@ -45,5 +46,3 @@ async def to_code(config):
         "MINI": 1,
     }
     cg.add(var.set_type(type_map[config[CONF_TYPE]]))
-
-    cg.add(var.setup())

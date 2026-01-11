@@ -1,83 +1,85 @@
 # Siebenuhr ESPHome
 
-This repository develops siebenuhr_esphome, an ESPHome-compatible version of the Siebenuhr ESP32 firmware. It transitions the standalone PlatformIO-based firmware into n [ESPHome External Component](https://esphome.io/components/external_components.html).
+[![Build](https://github.com/soliddifference/siebenuhr_esphome/actions/workflows/build.yml/badge.svg)](https://github.com/soliddifference/siebenuhr_esphome/actions/workflows/build.yml)
+
+ESPHome (for Home Assistant) integration with **Siebenuhr 7-segment LED clocks**. This component wraps the [siebenuhr_core](https://github.com/soliddifference/siebenuhr_core) library as an [ESPHome External Component](https://esphome.io/components/external_components.html), enabling Home Assistant integration with OTA updates, WiFi config, and light controls.
+
+The hardwareclocks can be ordered from our web shop at [soliddifference.com](https://soliddifference.com/)
+
+> If you don't use Home Assistant, you can use our [standalone "factory" firmware](https://github.com/soliddifference/siebenuhr) which can be flashed using PlatformIO.
 
 ---
 
 ## Prerequisites
 
-Before proceeding, ensure you have the following installed:
-
-1. [ESPHome](https://esphome.io/guides/installing.html) installed locally or in a Home Assistant environment.
-2. An ESP32 board and the necessary USB connection for flashing.
-3. A configured development environment (Python, ESPHome CLI, VisualCode, etc.).
+- [ESPHome](https://esphome.io/guides/installing.html) installed locally or via Home Assistant
+- ESP32 board with USB connection for flashing
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) for Python dependency management
 
 ---
 
 ## Getting Started
 
-### Prerequisites
+1. Clone the repository:
 
-1. Ensure you have [ESPHome](https://esphome.io/) installed and set up on your system.
-2. Clone the repository to your local machine:
    ```bash
    git clone https://github.com/soliddifference/siebenuhr_esphome
    cd siebenuhr_esphome
    ```
-3. Install uv: https://docs.astral.sh/uv/getting-started/installation/
-4. Run `uv sync`
-5. Activate the Python virtual environment
 
-```bash
-# macOS and Linux
-source .venv/bin/activate
+2. Install dependencies and activate the virtual environment:
 
-# Windows
-.venv\Scripts\activate
-```
+If needed, install uv: <https://docs.astral.sh/uv/getting-started/installation/> and then:
+
+   ```bash
+   uv sync
+   source .venv/bin/activate  # macOS/Linux
+   # or: .venv\Scripts\activate  # Windows
+   ```
 
 ### Configuration
 
-1. Make a copy of either `siebenuhr_git.yaml` or `siebenuhr_local.yaml`:
-
-   - Use `siebenuhr_local.yaml` for development purposes as it refers to the local version of the code and is optimized for fast compile and testing iterations.
+1. **Create your secrets file:**
 
    ```bash
-   cp siebenuhr_local.yaml your_modified_config.yaml
+   cp secrets_template.yaml secrets.yaml
    ```
 
-2. Edit `your_modified_config.yaml` to configure it for your local environment:
+   Edit `secrets.yaml` and enter your WiFi credentials and API keys.
 
-   - Update the most critical settings, specifically WiFi credentials, in the `wifi` section:
-     ```yaml
-     wifi:
-       ssid: !secret wifi_ssid
-       password: !secret wifi_password
-     ```
+2. **Choose a configuration:**
 
-3. **Switching to a Local Repository for Development:**
+   - `siebenuhr_git.yaml` — Uses GitHub for both the component and core library.
+   - `siebenuhr_local.yaml` — Uses local paths if changes are needed to the siebenuhr_core library.
 
-   - To work with a local version of the library during development, reference the library using a `file://` path instead of a GitHub URL. This allows for faster compile and testing without requiring Git commits.
+3. **Local development with siebenuhr_core:**
 
-     ```yaml
-     libraries:
-       - file://C:\local\path\to\the\core_package\dir\siebenuhr_core
-     ```
-
-   - Replace the path above with the location of your locally checked-out repository.
-
-### Compiling and Testing
-
-1. Test if your setup compiles by running:
+   Clone the core library into the `tmp/` folder:
 
    ```bash
-   esphome compile your_modified_config.yaml
+   git clone https://github.com/soliddifference/siebenuhr_core.git tmp/siebenuhr_core
    ```
 
-2. Alternatively, you can compile, upload, and connect to your device in one step:
-   ```bash
-   esphome run your_modified_config.yaml
+   The `siebenuhr_local.yaml` references it using a portable path:
+
+   ```yaml
+   libraries:
+     - file://${sysenv.PWD}/tmp/siebenuhr_core
    ```
+
+   This allows editing the core library locally without Git commits for each test.
+
+### Compiling and Flashing
+
+Compile and upload to your device:
+
+```bash
+esphome run siebenuhr_local.yaml   # for local development
+esphome run siebenuhr_git.yaml     # for production/release
+esphome logs siebenuhr_local.yaml   # view device logs (wifi or usb connection)
+```
+
+This will also show you the logs from the device in the terminal.
 
 ---
 

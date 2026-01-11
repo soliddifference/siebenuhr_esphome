@@ -1,0 +1,60 @@
+# CI workflow for siebenuhr_esphome
+# Verifies ESPHome configuration compiles successfully
+
+name: Build
+
+on:
+  push:
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-esphome:
+    name: ESPHome Build Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Checkout siebenuhr_core library
+        uses: actions/checkout@v4
+        with:
+          repository: soliddifference/siebenuhr_core
+          ref: main
+          path: tmp/siebenuhr_core
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+      
+      - name: Cache ESPHome build
+        uses: actions/cache@v4
+        with:
+          path: |
+            .esphome
+            ~/.platformio
+          key: esphome-${{ runner.os }}-${{ hashFiles('siebenuhr_local.yaml') }}
+          restore-keys: |
+            esphome-${{ runner.os }}-
+      
+      - name: Install dependencies
+        run: uv sync
+      
+      - name: Create secrets.yaml for CI
+        run: |
+          API_KEY=$(openssl rand -base64 32)
+          cat > secrets.yaml << EOF
+          wifi_ssid: "test-network"
+          wifi_password: "test-password"
+          apiKey: "${API_KEY}"
+          otaPassword: "test-ota-password"
+          EOF
+      
+      - name: Compile ESPHome configuration
+        run: uv run esphome compile siebenuhr_local.yaml
