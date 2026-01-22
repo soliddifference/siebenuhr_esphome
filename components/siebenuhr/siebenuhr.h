@@ -1,6 +1,6 @@
 #pragma once
 
-#define SIEBENUHR_ESPHOME_VERSION "1.0.10"
+#define SIEBENUHR_ESPHOME_VERSION "1.1.13"
 
 #include "esphome/core/log.h"
 #include "esphome/core/component.h"
