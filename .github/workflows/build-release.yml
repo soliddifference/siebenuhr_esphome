@@ -97,3 +97,23 @@ jobs:
             firmware-mini-${{ steps.version.outputs.version }}.bin
             firmware-regular-${{ steps.version.outputs.version }}.bin
           generate_release_notes: true
+      
+      - name: Notify support site
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.SUPPORT_SITE_PAT }}
+          repository: soliddifference/support.soliddifference.com
+          event-type: firmware-release
+          client-payload: >-
+            {
+              "version": "${{ steps.version.outputs.version }}",
+              "release_notes": "ESPHome firmware ${{ steps.version.outputs.version }}",
+              "release_date": "${{ github.event.head_commit.timestamp }}",
+              "firmware_type": "esphome"
+            }
+      
+      - name: Log release details
+        run: |
+          echo "Release created and support site notified"
+          echo "Version: ${{ steps.version.outputs.version }}"
+          echo "Firmware type: esphome"
