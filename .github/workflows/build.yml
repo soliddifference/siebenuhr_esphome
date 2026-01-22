@@ -5,6 +5,9 @@ name: Build
 
 on:
   push:
+    branches: [main, master]
+    tags-ignore:
+      - 'v*'
   pull_request:
     branches: [main, master]
   workflow_dispatch:
