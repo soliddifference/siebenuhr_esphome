@@ -29,7 +29,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.SUPPORT_SITE_PAT }}
-          repository: soliddifference/support-soliddifference
+          repository: soliddifference/support.soliddifference.com
           event-type: firmware-release
           client-payload: >-
             {
