@@ -670,7 +670,7 @@ wheels = [
 
 [[package]]
 name = "siebenuhr-esphome"
-version = "0.1.0"
+version = "1.0.10"
 source = { virtual = "." }
 dependencies = [
     { name = "esphome" },

@@ -1,0 +1,96 @@
+# Build and release firmware when a version tag is pushed
+# Creates GitHub release with firmware binaries for web flasher distribution
+
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build Firmware
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+      
+      - name: Cache ESPHome build
+        uses: actions/cache@v4
+        with:
+          path: |
+            .esphome
+            ~/.platformio
+          key: esphome-release-${{ runner.os }}-${{ hashFiles('siebenuhr_mini.yaml', 'siebenuhr_regular.yaml') }}
+          restore-keys: |
+            esphome-release-${{ runner.os }}-
+      
+      - name: Install dependencies
+        run: uv sync
+      
+      - name: Extract version
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+      
+      - name: Update firmware version in source
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          # Update C++ header version
+          sed -i "s/#define SIEBENUHR_ESPHOME_VERSION \".*\"/#define SIEBENUHR_ESPHOME_VERSION \"$VERSION\"/" \
+            components/siebenuhr/siebenuhr.h
+          echo "Updated SIEBENUHR_ESPHOME_VERSION to $VERSION"
+          grep SIEBENUHR_ESPHOME_VERSION components/siebenuhr/siebenuhr.h
+          
+          # Update ESPHome project version in YAML configs
+          sed -i "s/version: \"dev\"/version: \"$VERSION\"/" siebenuhr_mini.yaml siebenuhr_regular.yaml
+          echo "Updated ESPHome project version in YAML configs"
+          
+          # Update pyproject.toml version
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+          echo "Updated pyproject.toml version"
+      
+      - name: Build Mini firmware
+        run: |
+          uv run esphome compile siebenuhr_mini.yaml
+          # Use factory image (includes bootloader + partitions) for web flasher
+          cp .esphome/build/siebenuhr-mini/.pioenvs/siebenuhr-mini/firmware.factory.bin \
+             firmware-mini-${{ steps.version.outputs.version }}.bin
+          echo "Built firmware-mini-${{ steps.version.outputs.version }}.bin"
+      
+      - name: Build Regular firmware
+        run: |
+          uv run esphome compile siebenuhr_regular.yaml
+          # Use factory image (includes bootloader + partitions) for web flasher
+          cp .esphome/build/siebenuhr-regular/.pioenvs/siebenuhr-regular/firmware.factory.bin \
+             firmware-regular-${{ steps.version.outputs.version }}.bin
+          echo "Built firmware-regular-${{ steps.version.outputs.version }}.bin"
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ steps.version.outputs.version }}
+          path: |
+            firmware-mini-${{ steps.version.outputs.version }}.bin
+            firmware-regular-${{ steps.version.outputs.version }}.bin
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            firmware-mini-${{ steps.version.outputs.version }}.bin
+            firmware-regular-${{ steps.version.outputs.version }}.bin
+          generate_release_notes: true

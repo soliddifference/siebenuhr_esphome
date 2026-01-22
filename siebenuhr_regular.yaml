@@ -1,0 +1,82 @@
+# Siebenuhr Regular - Release build configuration
+# This configuration is used for automated builds and web flasher distribution.
+# WiFi credentials are configured after flashing via the captive portal.
+
+esphome:
+  name: siebenuhr-regular
+  friendly_name: Siebenuhr Regular
+  project:
+    name: soliddifference.siebenuhr-esphome
+    version: "dev"
+  platformio_options:
+    build_flags:
+      - -D FASTLED_DITHER_ENABLED=0
+      - -D SENSOR_READ_INTERVAL_MS=5000
+  libraries:
+    - Fastled
+    - RunningAverage
+    - Wire
+    - BH1750
+    - SPI
+    - adafruit/Adafruit BusIO
+    - adafruit/Adafruit INA219
+    - igorantolic/Ai Esp32 Rotary Encoder
+    - siebenuhr_core=https://github.com/soliddifference/siebenuhr_core.git
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/soliddifference/siebenuhr_esphome.git
+      ref: main
+    components: [ siebenuhr ]
+    refresh: 0s
+
+logger:
+  level: INFO
+
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ap:
+    ssid: "Siebenuhr-Regular"
+  reboot_timeout: 0s
+
+captive_portal:
+
+improv_serial:
+
+esp32_improv:
+  authorizer: none
+
+time:
+  - platform: sntp
+    id: sntp_time
+
+light:
+  - platform: siebenuhr
+    id: my_siebenuhr
+    name: Siebenuhr
+    restore_mode: RESTORE_DEFAULT_ON 
+    type: REGULAR
+    personality: SOLIDCOLOR
+    power_monitoring: True
+    time_id: sntp_time
+    default_transition_length: 0s
+
+text:
+  - platform: template
+    mode: text
+    id: siebenuhr_text_input
+    name: "Siebenuhr Text Input"
+    set_action:
+      then:
+        - lambda: |-
+            esphome::siebenuhr::global_siebenuhr_clock->set_notification(x, 4000);

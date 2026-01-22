@@ -4,9 +4,13 @@
 
 ESPHome (for Home Assistant) integration with **Siebenuhr 7-segment LED clocks**. This component wraps the [siebenuhr_core](https://github.com/soliddifference/siebenuhr_core) library as an [ESPHome External Component](https://esphome.io/components/external_components.html), enabling Home Assistant integration with OTA updates, WiFi config, and light controls.
 
-The hardwareclocks can be ordered from our web shop at [soliddifference.com](https://soliddifference.com/)
+The hardware clocks can be ordered from our web shop at [soliddifference.com](https://soliddifference.com/)
 
 > If you don't use Home Assistant, you can use our [standalone "factory" firmware](https://github.com/soliddifference/siebenuhr) which can be flashed using PlatformIO.
+
+## Quick Install
+
+Pre-built firmware is available via our [web flasher](https://support.soliddifference.com/firmware). Connect your clock via USB and flash directly from your browser - no development tools required.
 
 ---
 
@@ -80,6 +84,56 @@ esphome logs siebenuhr_local.yaml   # view device logs (wifi or usb connection)
 ```
 
 This will also show you the logs from the device in the terminal.
+
+---
+
+## Creating a Release
+
+Releases are automated via GitHub Actions. When a version tag is pushed:
+
+1. The `build-release` workflow compiles firmware for both Mini and Regular variants
+2. A GitHub release is created with the firmware binaries attached
+3. The `notify-support-site` workflow triggers a sync to update the web flasher
+
+To create a new release:
+
+```bash
+# Tag the release
+git tag -a v1.0.0 -m "Release description"
+git push origin v1.0.0
+```
+
+The firmware binaries will be named:
+- `firmware-mini-{version}.bin` - For Mini clocks (28 LEDs per segment)
+- `firmware-regular-{version}.bin` - For Regular clocks (119 LEDs per segment)
+
+### Release Configurations
+
+The release builds use dedicated configurations (`siebenuhr_mini.yaml` and `siebenuhr_regular.yaml`) that:
+- Don't require pre-configured WiFi credentials
+- Start in AP mode with captive portal for initial setup
+- Support Improv Serial and ESP32 Improv for easy WiFi configuration
+
+---
+
+## Project Structure
+
+```
+siebenuhr_esphome/
+├── components/siebenuhr/     # ESPHome external component
+│   ├── __init__.py
+│   ├── light.py              # ESPHome light platform config
+│   ├── controller.cpp/.h     # Controller logic
+│   └── siebenuhr.cpp/.h      # Main component
+├── siebenuhr_local.yaml      # Local development config
+├── siebenuhr_git.yaml        # Production config (uses git refs)
+├── siebenuhr_mini.yaml       # Release build for Mini variant
+├── siebenuhr_regular.yaml    # Release build for Regular variant
+└── .github/workflows/
+    ├── build.yml             # CI build check
+    ├── build-release.yml     # Release build workflow
+    └── notify-support-site.yml # Support site notification
+```
 
 ---
 
